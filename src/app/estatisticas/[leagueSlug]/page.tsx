@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { desc, eq, and, isNull } from 'drizzle-orm'
+import { desc, eq, and, isNull, sql } from 'drizzle-orm'
 import { alias } from 'drizzle-orm/pg-core'
 import { db } from '@/database/client'
 import { leagues, teams, standings, topScorers, matches, rounds } from '@/database/schema'
@@ -59,21 +59,25 @@ export default async function LeaguePage({ params, searchParams }: PageProps) {
   const [standingRows, scorerRows, matchRows, knockoutRows] = await Promise.all([
     db
       .select({
-        id: standings.id,
+        id: teams.id,
         teamName: teams.name,
         grupo: teams.grupo,
-        played: standings.played,
-        won: standings.won,
-        drawn: standings.drawn,
-        lost: standings.lost,
-        goalsFor: standings.goalsFor,
-        goalsAgainst: standings.goalsAgainst,
-        points: standings.points,
+        played:       sql<number>`COALESCE(${standings.played}, 0)`,
+        won:          sql<number>`COALESCE(${standings.won}, 0)`,
+        drawn:        sql<number>`COALESCE(${standings.drawn}, 0)`,
+        lost:         sql<number>`COALESCE(${standings.lost}, 0)`,
+        goalsFor:     sql<number>`COALESCE(${standings.goalsFor}, 0)`,
+        goalsAgainst: sql<number>`COALESCE(${standings.goalsAgainst}, 0)`,
+        points:       sql<number>`COALESCE(${standings.points}, 0)`,
       })
-      .from(standings)
-      .leftJoin(teams, eq(standings.teamId, teams.id))
-      .where(eq(standings.leagueId, league.id))
-      .orderBy(desc(standings.points)),
+      .from(teams)
+      .leftJoin(standings, and(eq(standings.teamId, teams.id), eq(standings.leagueId, league.id)))
+      .where(eq(teams.leagueId, league.id))
+      .orderBy(
+        desc(sql`COALESCE(${standings.points}, 0)`),
+        desc(sql`COALESCE(${standings.goalsFor}, 0) - COALESCE(${standings.goalsAgainst}, 0)`),
+        desc(sql`COALESCE(${standings.goalsFor}, 0)`),
+      ),
 
     db
       .select({
