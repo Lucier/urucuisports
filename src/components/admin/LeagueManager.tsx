@@ -1,6 +1,6 @@
 'use client'
 
-import { useActionState, useState } from 'react'
+import { useActionState, useEffect, useState } from 'react'
 import { useFormStatus } from 'react-dom'
 import Image from 'next/image'
 import { upsertLeagueAction, deleteLeagueAction, type LeagueFormState } from '@/app/admin/ligas/actions'
@@ -79,7 +79,18 @@ export function LeagueManager({ leagues, totalCount }: { leagues: League[]; tota
   const [state, formAction] = useActionState(upsertLeagueAction, initialState)
   const [editing, setEditing] = useState<League | null>(null)
   const [logoPreview, setLogoPreview] = useState<string>('')
-  const [tipo, setTipo] = useState<LeagueTipo>('pontos_corridos')
+  const [tipo, setTipo] = useState<LeagueTipo | ''>('')
+  const [formKey, setFormKey] = useState(0)
+  const [deleteTarget, setDeleteTarget] = useState<League | null>(null)
+
+  useEffect(() => {
+    if (state.success) {
+      setEditing(null)
+      setLogoPreview('')
+      setTipo('')
+      setFormKey((k) => k + 1)
+    }
+  }, [state.success])
 
   function startEdit(league: League) {
     setEditing(league)
@@ -91,18 +102,48 @@ export function LeagueManager({ leagues, totalCount }: { leagues: League[]; tota
   function cancel() {
     setEditing(null)
     setLogoPreview('')
-    setTipo('pontos_corridos')
+    setTipo('')
   }
 
   return (
     <div className="space-y-10">
+      {/* Modal de confirmação de exclusão */}
+      {deleteTarget && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
+          <div className="mx-4 w-full max-w-sm rounded-2xl bg-white p-6 shadow-xl">
+            <h2 className="text-base font-semibold text-slate-800">Excluir liga?</h2>
+            <p className="mt-1 text-sm text-slate-500">
+              A liga <span className="font-medium text-slate-700">&ldquo;{deleteTarget.name}&rdquo;</span> será removida permanentemente. Os times vinculados não serão excluídos.
+            </p>
+            <div className="mt-5 flex gap-2">
+              <button
+                type="button"
+                onClick={() => setDeleteTarget(null)}
+                className="flex-1 rounded-lg border border-slate-200 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-50"
+              >
+                Cancelar
+              </button>
+              <form action={deleteLeagueAction} onSubmit={() => setDeleteTarget(null)}>
+                <input type="hidden" name="id" value={deleteTarget.id} />
+                <button
+                  type="submit"
+                  className="w-full rounded-lg bg-red-600 px-6 py-2 text-sm font-medium text-white transition hover:bg-red-700"
+                >
+                  Confirmar exclusão
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Formulário */}
       <div className="rounded-2xl border border-slate-100 bg-white p-6 shadow-sm">
         <h2 className="mb-5 text-lg font-bold text-slate-800">
           {editing ? 'Editar liga' : 'Nova liga'}
         </h2>
 
-        <form action={formAction} className="space-y-4">
+        <form key={formKey} action={formAction} className="space-y-4">
           {editing && <input type="hidden" name="id" value={editing.id} />}
 
           <div>
@@ -157,9 +198,10 @@ export function LeagueManager({ leagues, totalCount }: { leagues: League[]; tota
             <select
               name="tipo"
               value={tipo}
-              onChange={(e) => setTipo(e.target.value as LeagueTipo)}
+              onChange={(e) => setTipo(e.target.value as LeagueTipo | '')}
               className={selectCls}
             >
+              <option value="" disabled>Escolha o tipo de liga</option>
               <option value="pontos_corridos">Pontos corridos</option>
               <option value="grupos">Grupos</option>
             </select>
@@ -263,18 +305,13 @@ export function LeagueManager({ leagues, totalCount }: { leagues: League[]; tota
                         >
                           Editar
                         </button>
-                        <form action={deleteLeagueAction}>
-                          <input type="hidden" name="id" value={league.id} />
-                          <button
-                            type="submit"
-                            className="rounded px-3 py-1 text-xs font-medium text-red-600 hover:bg-red-50"
-                            onClick={(e) => {
-                              if (!confirm(`Excluir "${league.name}"? Os times não serão removidos.`)) e.preventDefault()
-                            }}
-                          >
-                            Excluir
-                          </button>
-                        </form>
+                        <button
+                          type="button"
+                          onClick={() => setDeleteTarget(league)}
+                          className="rounded px-3 py-1 text-xs font-medium text-red-600 hover:bg-red-50"
+                        >
+                          Excluir
+                        </button>
                       </div>
                     </td>
                   </tr>
