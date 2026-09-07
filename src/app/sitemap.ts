@@ -3,6 +3,8 @@ import { db } from '@/database/client'
 import { posts, leagues } from '@/database/schema'
 import { isNull, desc } from 'drizzle-orm'
 
+export const dynamic = 'force-dynamic'
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const base = (process.env.NEXT_PUBLIC_API_URL ?? 'https://urucuisports.com').replace(/\/$/, '')
 
