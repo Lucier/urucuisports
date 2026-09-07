@@ -306,6 +306,20 @@ export const matchGoalsRelations = relations(matchGoals, ({ one }) => ({
   team: one(teams, { fields: [matchGoals.teamId], references: [teams.id] }),
 }))
 
+// ─── Advertisers ─────────────────────────────────────────────────────────────
+
+export const advertisers = pgTable(
+  'advertisers',
+  {
+    id: uuid('id').defaultRandom().primaryKey(),
+    name: varchar('name', { length: 255 }).notNull(),
+    logoUrl: text('logo_url'),
+    url: text('url').notNull(),
+    createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+  },
+  (table) => [index('idx_advertisers_created').on(table.createdAt)],
+)
+
 // ─── Photo Albums ─────────────────────────────────────────────────────────────
 
 export const photoAlbums = pgTable(

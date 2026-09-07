@@ -1,15 +1,17 @@
 import Link from 'next/link'
 import { asc, desc, eq, gt } from 'drizzle-orm'
 import { db } from '@/database/client'
-import { posts, categories, users } from '@/database/schema'
+import { posts, categories, users, advertisers } from '@/database/schema'
 import { NewsCarousel } from './NewsCarousel'
 import { SerieAStatsCard } from './SerieAStatsCard'
 import { MatchesCard } from './MatchesCard'
 import { SafeImage } from '@/components/ui/SafeImage'
 import { formatDate } from '@/shared/utils'
 
+const AD_SLOTS = 3
+
 export async function NewsHighlights() {
-  const [carouselRows, localRows] = await Promise.all([
+  const [carouselRows, localRows, advertiserRows] = await Promise.all([
     // Carrossel: relevancia > 0, ordenado por relevancia ASC → mais recente DESC
     db
       .select({
@@ -43,6 +45,18 @@ export async function NewsHighlights() {
       .where(eq(categories.slug, 'futebol-local'))
       .orderBy(desc(posts.createdAt))
       .limit(4),
+
+    // Anunciantes
+    db
+      .select({
+        id: advertisers.id,
+        name: advertisers.name,
+        logoUrl: advertisers.logoUrl,
+        url: advertisers.url,
+      })
+      .from(advertisers)
+      .orderBy(asc(advertisers.createdAt))
+      .limit(AD_SLOTS),
   ])
 
   if (carouselRows.length === 0 && localRows.length === 0) return null
@@ -114,14 +128,40 @@ export async function NewsHighlights() {
 
       {/* Anúncios */}
       <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
-        {[0, 1, 2].map((i) => (
-          <div
-            key={i}
-            className="flex h-40 items-center justify-center rounded-xl border-2 border-dashed border-slate-200 bg-slate-50"
-          >
-            <span className="text-sm font-medium text-slate-400">Anuncie aqui</span>
-          </div>
-        ))}
+        {Array.from({ length: AD_SLOTS }).map((_, i) => {
+          const adv = advertiserRows[i]
+          if (!adv) {
+            return (
+              <div
+                key={i}
+                className="flex h-40 items-center justify-center rounded-xl border-2 border-dashed border-slate-200 bg-slate-50"
+              >
+                <span className="text-sm font-medium text-slate-400">Anuncie aqui</span>
+              </div>
+            )
+          }
+          return (
+            <a
+              key={adv.id}
+              href={adv.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex h-40 items-center justify-center rounded-xl border border-slate-200 bg-white shadow-sm transition hover:border-emerald-300 hover:shadow-md"
+            >
+              {adv.logoUrl ? (
+                <SafeImage
+                  src={adv.logoUrl}
+                  alt={adv.name}
+                  className="max-h-24 max-w-[180px] object-contain"
+                />
+              ) : (
+                <span className="px-4 text-center text-lg font-bold text-slate-700">
+                  {adv.name}
+                </span>
+              )}
+            </a>
+          )
+        })}
       </div>
 
       {/* Jogos e Classificação lado a lado */}

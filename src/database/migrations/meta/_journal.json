@@ -43,6 +43,13 @@
       "when": 1788480408331,
       "tag": "0005_purple_catseye",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1788742055081,
+      "tag": "0006_lumpy_risque",
+      "breakpoints": true
     }
   ]
 }
