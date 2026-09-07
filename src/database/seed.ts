@@ -156,16 +156,19 @@ async function seed() {
   console.log('  ✓ banco limpo\n')
 
   // ── Usuários ─────────────────────────────────────────────────────────────────
-  const [adminPw, userPw] = await Promise.all([
+  const [lucierPw, moisesPw, userPw] = await Promise.all([
     hash('Admin@123!', SALT_ROUNDS),
+    hash('Admin@132!', SALT_ROUNDS),
     hash('User@123!', SALT_ROUNDS),
   ])
   const [admin, editor] = await db.insert(users).values([
-    { name: 'Administrador', email: 'admin@urucuisports.com', password: adminPw, role: 'ADMIN' },
+    { name: 'Lucier', email: 'lucierflima@gmail.com', password: lucierPw, role: 'ADMIN' },
+    { name: 'Moises', email: 'moisesferreira447@gmail.com', password: moisesPw, role: 'ADMIN' },
     { name: 'Carlos Mendes', email: 'editor@urucuisports.com', password: userPw, role: 'USER' },
   ]).returning()
-  console.log('  ✓ 2 usuários')
-  console.log('    admin@urucuisports.com / Admin@123!')
+  console.log('  ✓ 3 usuários')
+  console.log('    lucierflima@gmail.com / Admin@123!')
+  console.log('    moisesferreira447@gmail.com / Admin@132!')
   console.log('    editor@urucuisports.com / User@123!\n')
 
   // ── Categorias ───────────────────────────────────────────────────────────────
