@@ -32,7 +32,7 @@ function SubmitButton({ editing }: { editing: boolean }) {
   )
 }
 
-export function PhotoAlbumManager({ albums }: { albums: Album[] }) {
+export function PhotoAlbumManager({ albums, totalCount }: { albums: Album[]; totalCount: number }) {
   const [state, formAction, pending] = useActionState(upsertAlbumAction, initialState)
   const [editing, setEditing] = useState<Album | null>(null)
 
@@ -146,7 +146,7 @@ export function PhotoAlbumManager({ albums }: { albums: Album[] }) {
         <div>
           <h2 className="mb-4 text-lg font-bold text-slate-800">
             Álbuns cadastrados
-            <span className="ml-2 text-base font-normal text-gray-400">({albums.length})</span>
+            <span className="ml-2 text-base font-normal text-gray-400">({totalCount})</span>
           </h2>
 
           <div className="overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-sm">

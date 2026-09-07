@@ -72,7 +72,7 @@ function TipoBadge({ tipo, numeroGrupos }: { tipo: LeagueTipo; numeroGrupos: num
   )
 }
 
-export function LeagueManager({ leagues }: { leagues: League[] }) {
+export function LeagueManager({ leagues, totalCount }: { leagues: League[]; totalCount: number }) {
   const [state, formAction] = useActionState(upsertLeagueAction, initialState)
   const [editing, setEditing] = useState<League | null>(null)
   const [logoPreview, setLogoPreview] = useState<string>('')
@@ -210,7 +210,7 @@ export function LeagueManager({ leagues }: { leagues: League[] }) {
         <div>
           <h2 className="mb-4 text-lg font-bold text-slate-800">
             Ligas cadastradas
-            <span className="ml-2 text-base font-normal text-gray-400">({leagues.length})</span>
+            <span className="ml-2 text-base font-normal text-gray-400">({totalCount})</span>
           </h2>
 
           <div className="overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-sm">

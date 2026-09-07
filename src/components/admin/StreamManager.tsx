@@ -51,7 +51,7 @@ function SubmitButton({ editing }: { editing: boolean }) {
   )
 }
 
-export function StreamManager({ streams }: { streams: Stream[] }) {
+export function StreamManager({ streams, totalCount }: { streams: Stream[]; totalCount: number }) {
   const [state, formAction] = useActionState(upsertStreamAction, initialState)
   const [editing, setEditing] = useState<Stream | null>(null)
 
@@ -186,7 +186,7 @@ export function StreamManager({ streams }: { streams: Stream[] }) {
         <div>
           <h2 className="mb-4 text-lg font-bold text-slate-800">
             Transmissões cadastradas
-            <span className="ml-2 text-base font-normal text-gray-400">({streams.length})</span>
+            <span className="ml-2 text-base font-normal text-gray-400">({totalCount})</span>
           </h2>
 
           <div className="space-y-3">

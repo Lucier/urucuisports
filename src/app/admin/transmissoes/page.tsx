@@ -1,19 +1,33 @@
 import { headers } from 'next/headers'
 import { redirect } from 'next/navigation'
-import { desc } from 'drizzle-orm'
+import { desc, count } from 'drizzle-orm'
 import { db } from '@/database/client'
 import { streams } from '@/database/schema'
 import { StreamManager } from '@/components/admin/StreamManager'
+import { Pagination } from '@/components/admin/Pagination'
 
 export const metadata = { title: 'Transmissões — Admin | Urucuí Esportes' }
 
-export default async function AdminTransmissoesPage() {
+const PAGE_SIZE = 10
+
+type Props = { searchParams: Promise<{ page?: string }> }
+
+export default async function AdminTransmissoesPage({ searchParams }: Props) {
   const headersList = await headers()
   const userId = headersList.get('x-user-id')
   const userRole = headersList.get('x-user-role')
   if (!userId || userRole !== 'ADMIN') redirect('/login')
 
-  const rows = await db.select().from(streams).orderBy(desc(streams.createdAt))
+  const { page: pageParam } = await searchParams
+  const page = Math.max(1, Number(pageParam) || 1)
+  const offset = (page - 1) * PAGE_SIZE
+
+  const [[{ value: total }], rows] = await Promise.all([
+    db.select({ value: count() }).from(streams),
+    db.select().from(streams).orderBy(desc(streams.createdAt)).limit(PAGE_SIZE).offset(offset),
+  ])
+
+  const totalPages = Math.ceil(total / PAGE_SIZE)
 
   return (
     <div className="py-8">
@@ -23,7 +37,8 @@ export default async function AdminTransmissoesPage() {
           Gerencie links de transmissões ao vivo pelo YouTube
         </p>
       </div>
-      <StreamManager streams={rows} />
+      <StreamManager streams={rows} totalCount={total} />
+      <Pagination page={page} totalPages={totalPages} basePath="/admin/transmissoes" />
     </div>
   )
 }

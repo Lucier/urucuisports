@@ -6,11 +6,14 @@ import { db } from '@/database/client'
 import { leagues, teams } from '@/database/schema'
 import { LeagueManager } from '@/components/admin/LeagueManager'
 import { LeagueTeamsPanel } from '@/components/admin/LeagueTeamsPanel'
+import { Pagination } from '@/components/admin/Pagination'
 import { SafeImage } from '@/components/ui/SafeImage'
 
 export const metadata = { title: 'Ligas — Admin | Urucuí Esportes' }
 
-type Props = { searchParams: Promise<{ liga?: string }> }
+const PAGE_SIZE = 10
+
+type Props = { searchParams: Promise<{ liga?: string; page?: string }> }
 
 export default async function AdminLigasPage({ searchParams }: Props) {
   const headersList = await headers()
@@ -18,7 +21,7 @@ export default async function AdminLigasPage({ searchParams }: Props) {
   const userRole = headersList.get('x-user-role')
   if (!userId || userRole !== 'ADMIN') redirect('/login')
 
-  const { liga: leagueId } = await searchParams
+  const { liga: leagueId, page: pageParam } = await searchParams
 
   // ── Vista de times de uma liga ─────────────────────────────────────────────
   if (leagueId) {
@@ -91,20 +94,30 @@ export default async function AdminLigasPage({ searchParams }: Props) {
   }
 
   // ── Vista principal: lista + formulário ────────────────────────────────────
-  const rows = await db
-    .select({
-      id: leagues.id,
-      name: leagues.name,
-      slug: leagues.slug,
-      logoUrl: leagues.logoUrl,
-      tipo: leagues.tipo,
-      numeroGrupos: leagues.numeroGrupos,
-      teamCount: count(teams.id),
-    })
-    .from(leagues)
-    .leftJoin(teams, eq(teams.leagueId, leagues.id))
-    .groupBy(leagues.id)
-    .orderBy(leagues.name)
+  const page = Math.max(1, Number(pageParam) || 1)
+  const offset = (page - 1) * PAGE_SIZE
+
+  const [[{ value: total }], rows] = await Promise.all([
+    db.select({ value: count() }).from(leagues),
+    db
+      .select({
+        id: leagues.id,
+        name: leagues.name,
+        slug: leagues.slug,
+        logoUrl: leagues.logoUrl,
+        tipo: leagues.tipo,
+        numeroGrupos: leagues.numeroGrupos,
+        teamCount: count(teams.id),
+      })
+      .from(leagues)
+      .leftJoin(teams, eq(teams.leagueId, leagues.id))
+      .groupBy(leagues.id)
+      .orderBy(leagues.name)
+      .limit(PAGE_SIZE)
+      .offset(offset),
+  ])
+
+  const totalPages = Math.ceil(total / PAGE_SIZE)
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-10">
@@ -114,7 +127,8 @@ export default async function AdminLigasPage({ searchParams }: Props) {
           Gerencie as competições e seus times participantes
         </p>
       </div>
-      <LeagueManager leagues={rows} />
+      <LeagueManager leagues={rows} totalCount={total} />
+      <Pagination page={page} totalPages={totalPages} basePath="/admin/ligas" />
     </div>
   )
 }

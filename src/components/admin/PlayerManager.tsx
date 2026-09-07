@@ -61,7 +61,7 @@ function PlayerAvatar({ name, photoUrl }: { name: string; photoUrl: string | nul
   )
 }
 
-export function PlayerManager({ players, teamId }: { players: Player[]; teamId: string }) {
+export function PlayerManager({ players, teamId, totalCount }: { players: Player[]; teamId: string; totalCount: number }) {
   const [state, formAction] = useActionState(upsertPlayerAction, initialState)
   const [editing, setEditing] = useState<Player | null>(null)
   const [photoPreview, setPhotoPreview] = useState<string>('')
@@ -182,7 +182,7 @@ export function PlayerManager({ players, teamId }: { players: Player[]; teamId: 
         <div>
           <h2 className="mb-4 text-lg font-bold text-slate-800">
             Elenco
-            <span className="ml-2 text-base font-normal text-gray-400">({players.length} jogadores)</span>
+            <span className="ml-2 text-base font-normal text-gray-400">({totalCount} jogadores)</span>
           </h2>
 
           <div className="overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-sm">

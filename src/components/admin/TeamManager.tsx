@@ -46,7 +46,7 @@ function TeamAvatar({ name, logoUrl }: { name: string; logoUrl: string | null })
   )
 }
 
-export function TeamManager({ teams }: { teams: Team[] }) {
+export function TeamManager({ teams, totalCount }: { teams: Team[]; totalCount: number }) {
   const [state, formAction] = useActionState(upsertTeamAction, initialState)
   const [editing, setEditing] = useState<Team | null>(null)
   const [logoPreview, setLogoPreview] = useState<string>('')
@@ -144,7 +144,7 @@ export function TeamManager({ teams }: { teams: Team[] }) {
         <div>
           <h2 className="mb-4 text-lg font-bold text-slate-800">
             Times cadastrados
-            <span className="ml-2 text-base font-normal text-gray-400">({teams.length})</span>
+            <span className="ml-2 text-base font-normal text-gray-400">({totalCount})</span>
           </h2>
 
           <div className="overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-sm">

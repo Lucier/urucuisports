@@ -1,15 +1,18 @@
 import { headers } from 'next/headers'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
-import { eq } from 'drizzle-orm'
+import { eq, count } from 'drizzle-orm'
 import { db } from '@/database/client'
 import { teams, players } from '@/database/schema'
 import { PlayerManager } from '@/components/admin/PlayerManager'
+import { Pagination } from '@/components/admin/Pagination'
 import { SafeImage } from '@/components/ui/SafeImage'
 
 export const metadata = { title: 'Jogadores — Admin | Urucuí Esportes' }
 
-type Props = { searchParams: Promise<{ time?: string }> }
+const PAGE_SIZE = 10
+
+type Props = { searchParams: Promise<{ time?: string; page?: string }> }
 
 export default async function AdminJogadoresPage({ searchParams }: Props) {
   const headersList = await headers()
@@ -17,7 +20,7 @@ export default async function AdminJogadoresPage({ searchParams }: Props) {
   const userRole = headersList.get('x-user-role')
   if (!userId || userRole !== 'ADMIN') redirect('/login')
 
-  const { time: teamId } = await searchParams
+  const { time: teamId, page: pageParam } = await searchParams
 
   // ── Vista de jogadores de um time específico ──────────────────────────────
   if (teamId) {
@@ -28,17 +31,27 @@ export default async function AdminJogadoresPage({ searchParams }: Props) {
 
     if (!team) redirect('/admin/jogadores')
 
-    const playerRows = await db
-      .select({
-        id: players.id,
-        name: players.name,
-        position: players.position,
-        photoUrl: players.photoUrl,
-        teamId: players.teamId,
-      })
-      .from(players)
-      .where(eq(players.teamId, teamId))
-      .orderBy(players.name)
+    const page = Math.max(1, Number(pageParam) || 1)
+    const offset = (page - 1) * PAGE_SIZE
+
+    const [[{ value: total }], playerRows] = await Promise.all([
+      db.select({ value: count() }).from(players).where(eq(players.teamId, teamId)),
+      db
+        .select({
+          id: players.id,
+          name: players.name,
+          position: players.position,
+          photoUrl: players.photoUrl,
+          teamId: players.teamId,
+        })
+        .from(players)
+        .where(eq(players.teamId, teamId))
+        .orderBy(players.name)
+        .limit(PAGE_SIZE)
+        .offset(offset),
+    ])
+
+    const totalPages = Math.ceil(total / PAGE_SIZE)
 
     return (
       <div className="py-8">
@@ -74,16 +87,32 @@ export default async function AdminJogadoresPage({ searchParams }: Props) {
           </div>
         </div>
 
-        <PlayerManager players={playerRows} teamId={teamId} />
+        <PlayerManager players={playerRows} teamId={teamId} totalCount={total} />
+        <Pagination
+          page={page}
+          totalPages={totalPages}
+          basePath="/admin/jogadores"
+          extraParams={{ time: teamId }}
+        />
       </div>
     )
   }
 
   // ── Vista de seleção de time ───────────────────────────────────────────────
-  const teamRows = await db
-    .select({ id: teams.id, name: teams.name, logoUrl: teams.logoUrl })
-    .from(teams)
-    .orderBy(teams.name)
+  const page = Math.max(1, Number(pageParam) || 1)
+  const offset = (page - 1) * PAGE_SIZE
+
+  const [[{ value: total }], teamRows] = await Promise.all([
+    db.select({ value: count() }).from(teams),
+    db
+      .select({ id: teams.id, name: teams.name, logoUrl: teams.logoUrl })
+      .from(teams)
+      .orderBy(teams.name)
+      .limit(PAGE_SIZE)
+      .offset(offset),
+  ])
+
+  const totalPages = Math.ceil(total / PAGE_SIZE)
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-10">
@@ -92,7 +121,7 @@ export default async function AdminJogadoresPage({ searchParams }: Props) {
         <p className="mt-1 text-sm text-slate-500">Escolha um time para gerenciar seu elenco</p>
       </div>
 
-      {teamRows.length === 0 ? (
+      {total === 0 ? (
         <div className="rounded-2xl border border-slate-100 bg-white p-10 text-center shadow-sm">
           <p className="text-sm text-slate-400">Nenhum time cadastrado ainda.</p>
           <Link
@@ -103,32 +132,35 @@ export default async function AdminJogadoresPage({ searchParams }: Props) {
           </Link>
         </div>
       ) : (
-        <div className="grid gap-3 sm:grid-cols-2">
-          {teamRows.map((team) => (
-            <Link
-              key={team.id}
-              href={`/admin/jogadores?time=${team.id}`}
-              className="flex items-center gap-4 rounded-2xl border border-slate-100 bg-white p-4 shadow-sm transition hover:border-emerald-200 hover:bg-emerald-50"
-            >
-              <div className="relative h-12 w-12 flex-shrink-0">
-                <div className="flex h-full w-full items-center justify-center rounded-full bg-emerald-100 text-xl font-bold text-emerald-700">
-                  {team.name.charAt(0)}
+        <>
+          <div className="grid gap-3 sm:grid-cols-2">
+            {teamRows.map((team) => (
+              <Link
+                key={team.id}
+                href={`/admin/jogadores?time=${team.id}`}
+                className="flex items-center gap-4 rounded-2xl border border-slate-100 bg-white p-4 shadow-sm transition hover:border-emerald-200 hover:bg-emerald-50"
+              >
+                <div className="relative h-12 w-12 flex-shrink-0">
+                  <div className="flex h-full w-full items-center justify-center rounded-full bg-emerald-100 text-xl font-bold text-emerald-700">
+                    {team.name.charAt(0)}
+                  </div>
+                  {team.logoUrl && (
+                    <SafeImage
+                      src={team.logoUrl}
+                      alt={team.name}
+                      className="absolute inset-0 h-full w-full rounded-full border border-slate-100 object-contain bg-slate-50"
+                    />
+                  )}
                 </div>
-                {team.logoUrl && (
-                  <SafeImage
-                    src={team.logoUrl}
-                    alt={team.name}
-                    className="absolute inset-0 h-full w-full rounded-full border border-slate-100 object-contain bg-slate-50"
-                  />
-                )}
-              </div>
-              <div className="min-w-0">
-                <p className="truncate font-semibold text-slate-800">{team.name}</p>
-                <p className="mt-0.5 text-xs text-slate-400">Ver elenco →</p>
-              </div>
-            </Link>
-          ))}
-        </div>
+                <div className="min-w-0">
+                  <p className="truncate font-semibold text-slate-800">{team.name}</p>
+                  <p className="mt-0.5 text-xs text-slate-400">Ver elenco →</p>
+                </div>
+              </Link>
+            ))}
+          </div>
+          <Pagination page={page} totalPages={totalPages} basePath="/admin/jogadores" />
+        </>
       )}
     </div>
   )

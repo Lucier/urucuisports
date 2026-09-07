@@ -18,7 +18,6 @@ import {
 } from '@/database/schema'
 import { usersRepository } from '@/modules/users/repository'
 import { UserRole } from '@/shared/types/auth'
-import { LogoutButton } from './LogoutButton'
 import { LeagueSelect } from './LeagueSelect'
 
 export const metadata = { title: 'Dashboard | Urucuí Esportes' }
@@ -327,9 +326,6 @@ export default async function DashboardPage({
           <p className="mt-1 text-sm text-slate-500">
             Aqui está um resumo geral da aplicação
           </p>
-        </div>
-        <div className="flex items-center gap-3">
-          <LogoutButton />
         </div>
       </div>
 
