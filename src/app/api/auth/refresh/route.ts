@@ -1,6 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { signToken } from '@/lib/jwt'
-import { AUTH_COOKIE, COOKIE_OPTIONS, REFRESH_COOKIE, REFRESH_COOKIE_OPTIONS } from '@/lib/auth'
+import {
+  ACCESS_TOKEN_LIFETIME_S,
+  AUTH_COOKIE,
+  COOKIE_OPTIONS,
+  EXPIRY_COOKIE,
+  EXPIRY_COOKIE_OPTIONS,
+  REFRESH_COOKIE,
+  REFRESH_COOKIE_OPTIONS,
+} from '@/lib/auth'
 import { refreshTokenRepository } from '@/modules/auth/refresh-token.repository'
 import { usersRepository } from '@/modules/users/repository'
 import { UserRole } from '@/shared/types/auth'
@@ -39,5 +47,10 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   const response = NextResponse.json({ success: true })
   response.cookies.set(AUTH_COOKIE, newToken, COOKIE_OPTIONS)
   response.cookies.set(REFRESH_COOKIE, newRefreshToken, REFRESH_COOKIE_OPTIONS)
+  response.cookies.set(
+    EXPIRY_COOKIE,
+    String(Math.floor(Date.now() / 1000) + ACCESS_TOKEN_LIFETIME_S),
+    EXPIRY_COOKIE_OPTIONS,
+  )
   return response
 }

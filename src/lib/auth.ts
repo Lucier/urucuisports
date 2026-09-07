@@ -5,14 +5,17 @@ import { UserRole, type JWTPayload } from '@/shared/types/auth'
 
 export const AUTH_COOKIE = 'auth-token'
 export const REFRESH_COOKIE = 'refresh-token'
+export const EXPIRY_COOKIE = 'token-expiry' // readable by JS to schedule proactive refresh
 
 const IS_PROD = process.env.NODE_ENV === 'production'
+
+export const ACCESS_TOKEN_LIFETIME_S = 60 * 60 // 1h — must match TOKEN_EXPIRY in jwt.ts
 
 export const COOKIE_OPTIONS = {
   httpOnly: true,
   secure: IS_PROD,
   sameSite: 'lax' as const,
-  maxAge: 60 * 60, // 1 hora — alinhado com TOKEN_EXPIRY em jwt.ts
+  maxAge: ACCESS_TOKEN_LIFETIME_S,
   path: '/',
 }
 
@@ -22,6 +25,15 @@ export const REFRESH_COOKIE_OPTIONS = {
   sameSite: 'lax' as const,
   maxAge: 60 * 60 * 24 * 7, // 7 dias
   path: '/api/auth', // limita o envio do cookie apenas às rotas de auth
+}
+
+// Not httpOnly: JS needs to read expiry to schedule proactive token refresh
+export const EXPIRY_COOKIE_OPTIONS = {
+  httpOnly: false,
+  secure: IS_PROD,
+  sameSite: 'lax' as const,
+  maxAge: ACCESS_TOKEN_LIFETIME_S,
+  path: '/',
 }
 
 export async function getCurrentUser(): Promise<JWTPayload | null> {

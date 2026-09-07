@@ -2,8 +2,17 @@ import { NextRequest, NextResponse } from 'next/server'
 import { authService } from '@/modules/auth/service'
 import { registerSchema } from '@/modules/auth/schemas'
 import { AuthError } from '@/modules/auth/types'
-import { AUTH_COOKIE, COOKIE_OPTIONS, REFRESH_COOKIE, REFRESH_COOKIE_OPTIONS } from '@/lib/auth'
+import {
+  ACCESS_TOKEN_LIFETIME_S,
+  AUTH_COOKIE,
+  COOKIE_OPTIONS,
+  EXPIRY_COOKIE,
+  EXPIRY_COOKIE_OPTIONS,
+  REFRESH_COOKIE,
+  REFRESH_COOKIE_OPTIONS,
+} from '@/lib/auth'
 import { rateLimit } from '@/lib/rate-limit'
+import { checkBodySize } from '@/lib/request'
 
 // 3 registros por IP a cada hora
 const LIMIT = 3
@@ -14,6 +23,9 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ??
     request.headers.get('x-real-ip') ??
     'unknown'
+
+  const sizeError = checkBodySize(request)
+  if (sizeError) return sizeError
 
   const { allowed, retryAfterMs } = rateLimit(`register:${ip}`, LIMIT, WINDOW_MS)
 
@@ -47,6 +59,11 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     const response = NextResponse.json({ user }, { status: 201 })
     response.cookies.set(AUTH_COOKIE, token, COOKIE_OPTIONS)
     response.cookies.set(REFRESH_COOKIE, refreshToken, REFRESH_COOKIE_OPTIONS)
+    response.cookies.set(
+      EXPIRY_COOKIE,
+      String(Math.floor(Date.now() / 1000) + ACCESS_TOKEN_LIFETIME_S),
+      EXPIRY_COOKIE_OPTIONS,
+    )
     return response
   } catch (err) {
     if (err instanceof AuthError) {

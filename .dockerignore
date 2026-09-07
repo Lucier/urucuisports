@@ -1,0 +1,32 @@
+# Version control
+.git
+.gitignore
+
+# Dependencies (rebuilt inside container)
+node_modules
+.pnpm-store
+
+# Build artifacts
+.next
+out
+build
+
+# Local env files
+.env
+.env.local
+.env*.local
+
+# Testing
+coverage
+
+# Database backups
+backups
+
+# IDE
+.vscode
+.idea
+
+# Misc
+.DS_Store
+*.pem
+README.md

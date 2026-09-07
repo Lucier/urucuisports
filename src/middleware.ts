@@ -3,7 +3,7 @@ import { verifyToken } from '@/lib/jwt'
 import { UserRole } from '@/shared/types/auth'
 import { AUTH_COOKIE } from '@/lib/auth'
 
-const PUBLIC_API_ROUTES = ['/api/auth/login', '/api/auth/register']
+const PUBLIC_API_ROUTES = ['/api/auth/login', '/api/auth/register', '/api/health']
 const ADMIN_ROUTES = ['/api/admin', '/admin']
 const PROTECTED_ROUTES = ['/api/auth/me', '/api/auth/logout']
 
