@@ -42,11 +42,15 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 }
 
 export async function generateStaticParams() {
-  const slugs = await db
-    .select({ slug: posts.slug })
-    .from(posts)
-    .where(isNull(posts.deletedAt))
-  return slugs.map(({ slug }) => ({ slug }))
+  try {
+    const slugs = await db
+      .select({ slug: posts.slug })
+      .from(posts)
+      .where(isNull(posts.deletedAt))
+    return slugs.map(({ slug }) => ({ slug }))
+  } catch {
+    return []
+  }
 }
 
 export default async function NoticiaPage({ params }: PageProps) {

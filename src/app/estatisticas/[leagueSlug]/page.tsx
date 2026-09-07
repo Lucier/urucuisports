@@ -31,10 +31,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   }
 }
 
-export async function generateStaticParams() {
-  const rows = await db.select({ slug: leagues.slug }).from(leagues)
-  return rows.map(({ slug }) => ({ leagueSlug: slug }))
-}
+export const dynamic = 'force-dynamic'
 
 const VALID_TABS: TabKey[] = ['classificacao', 'artilharia', 'calendario', 'fase-final']
 

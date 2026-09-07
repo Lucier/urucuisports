@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 import type { Metadata } from 'next'
 import { desc, eq, isNull, and } from 'drizzle-orm'
 import { db } from '@/database/client'
