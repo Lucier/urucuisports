@@ -2,6 +2,7 @@
 
 import { useActionState, useState } from 'react'
 import { useFormStatus } from 'react-dom'
+import Image from 'next/image'
 import { upsertPlayerAction, deletePlayerAction, type PlayerFormState } from '@/app/admin/jogadores/actions'
 
 const POSITIONS = [
@@ -50,11 +51,13 @@ function PlayerAvatar({ name, photoUrl }: { name: string; photoUrl: string | nul
         {name.charAt(0).toUpperCase()}
       </div>
       {photoUrl && (
-        <img
+        <Image
           src={photoUrl}
           alt={name}
-          className="absolute inset-0 h-full w-full rounded-full border border-slate-100 object-cover bg-slate-50"
-          onError={(e) => { e.currentTarget.style.display = 'none' }}
+          fill
+          sizes="40px"
+          className="rounded-full border border-slate-100 object-cover bg-slate-50"
+          onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
         />
       )}
     </div>
@@ -130,12 +133,16 @@ export function PlayerManager({ players, teamId, totalCount }: { players: Player
             </label>
             <div className="flex items-center gap-3">
               {(photoPreview || editing?.photoUrl) && (
-                <img
-                  src={photoPreview || editing?.photoUrl || ''}
-                  alt=""
-                  className="h-10 w-10 flex-shrink-0 rounded-full border border-slate-100 object-cover bg-slate-50"
-                  onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
-                />
+                <div className="relative h-10 w-10 flex-shrink-0">
+                  <Image
+                    src={photoPreview || editing?.photoUrl || ''}
+                    alt=""
+                    fill
+                    sizes="40px"
+                    className="rounded-full border border-slate-100 object-cover bg-slate-50"
+                    onError={(e) => { (e.target as HTMLImageElement).parentElement!.style.display = 'none' }}
+                  />
+                </div>
               )}
               <input
                 name="photoUrl"

@@ -1,3 +1,4 @@
+import Image from 'next/image'
 import { cn } from '@/shared/utils'
 
 export interface KnockoutMatch {
@@ -32,11 +33,13 @@ function TeamBadge({ name, logo }: { name: string | null; logo?: string | null }
         {(name ?? '?').charAt(0).toUpperCase()}
       </div>
       {logo && (
-        <img
+        <Image
           src={logo}
           alt={name ?? ''}
-          className="absolute inset-0 h-full w-full rounded-full border border-slate-100 object-contain bg-white p-1"
-          onError={(e) => { e.currentTarget.style.display = 'none' }}
+          fill
+          sizes="56px"
+          className="rounded-full border border-slate-100 object-contain bg-white p-1"
+          onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
         />
       )}
     </div>

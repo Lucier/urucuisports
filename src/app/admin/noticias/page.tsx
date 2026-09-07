@@ -1,6 +1,6 @@
 import { headers } from 'next/headers'
 import { redirect } from 'next/navigation'
-import { eq, desc, count } from 'drizzle-orm'
+import { eq, desc, count, isNull } from 'drizzle-orm'
 import { db } from '@/database/client'
 import { categories, posts } from '@/database/schema'
 import { PostFormSection } from '@/components/admin/PostFormSection'
@@ -25,7 +25,7 @@ export default async function AdminNoticiasPage({ searchParams }: Props) {
 
   const [categoryRows, [{ value: total }], postRows] = await Promise.all([
     db.select({ id: categories.id, name: categories.name }).from(categories),
-    db.select({ value: count() }).from(posts),
+    db.select({ value: count() }).from(posts).where(isNull(posts.deletedAt)),
     db
       .select({
         id: posts.id,
@@ -40,6 +40,7 @@ export default async function AdminNoticiasPage({ searchParams }: Props) {
       })
       .from(posts)
       .leftJoin(categories, eq(posts.categoryId, categories.id))
+      .where(isNull(posts.deletedAt))
       .orderBy(desc(posts.createdAt))
       .limit(PAGE_SIZE)
       .offset(offset),

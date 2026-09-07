@@ -29,6 +29,13 @@ const nextConfig: NextConfig = {
   output: 'standalone',
   compress: true,
   poweredByHeader: false,
+  images: {
+    remotePatterns: [
+      { protocol: 'https', hostname: '**' },
+      { protocol: 'http', hostname: 'localhost' },
+    ],
+    formats: ['image/avif', 'image/webp'],
+  },
   async headers() {
     return [
       {

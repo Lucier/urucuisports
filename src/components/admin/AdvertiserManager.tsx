@@ -2,6 +2,7 @@
 
 import { useActionState, useState } from 'react'
 import { useFormStatus } from 'react-dom'
+import Image from 'next/image'
 import {
   upsertAdvertiserAction,
   deleteAdvertiserAction,
@@ -41,13 +42,13 @@ function AdvertiserLogo({ name, logoUrl }: { name: string; logoUrl: string | nul
         {name.charAt(0).toUpperCase()}
       </div>
       {logoUrl && (
-        <img
+        <Image
           src={logoUrl}
           alt={name}
-          className="absolute inset-0 h-full w-full rounded-lg border border-slate-100 object-contain bg-white p-0.5"
-          onError={(e) => {
-            e.currentTarget.style.display = 'none'
-          }}
+          fill
+          sizes="40px"
+          className="rounded-lg border border-slate-100 object-contain bg-white p-0.5"
+          onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
         />
       )}
     </div>
@@ -122,14 +123,16 @@ export function AdvertiserManager({
             </label>
             <div className="flex items-center gap-3">
               {(logoPreview || editing?.logoUrl) && (
-                <img
-                  src={logoPreview || editing?.logoUrl || ''}
-                  alt=""
-                  className="h-10 w-10 flex-shrink-0 rounded-lg border border-slate-100 object-contain bg-white p-0.5"
-                  onError={(e) => {
-                    ;(e.target as HTMLImageElement).style.display = 'none'
-                  }}
-                />
+                <div className="relative h-10 w-10 flex-shrink-0">
+                  <Image
+                    src={logoPreview || editing?.logoUrl || ''}
+                    alt=""
+                    fill
+                    sizes="40px"
+                    className="rounded-lg border border-slate-100 object-contain bg-white p-0.5"
+                    onError={(e) => { (e.target as HTMLImageElement).parentElement!.style.display = 'none' }}
+                  />
+                </div>
               )}
               <input
                 name="logoUrl"

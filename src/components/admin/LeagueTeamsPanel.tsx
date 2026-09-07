@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 import { addTeamToLeagueAction, removeTeamFromLeagueAction } from '@/app/admin/ligas/actions'
 
 type LeagueTipo = 'pontos_corridos' | 'grupos'
@@ -33,11 +34,13 @@ function Avatar({ name, logoUrl, inLeague }: { name: string; logoUrl: string | n
         {name.charAt(0)}
       </div>
       {logoUrl && (
-        <img
+        <Image
           src={logoUrl}
           alt={name}
-          className="absolute inset-0 h-full w-full rounded-full border border-slate-100 object-contain bg-slate-50"
-          onError={(e) => { e.currentTarget.style.display = 'none' }}
+          fill
+          sizes="32px"
+          className="rounded-full border border-slate-100 object-contain bg-slate-50"
+          onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
         />
       )}
     </div>

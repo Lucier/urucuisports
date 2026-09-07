@@ -1,7 +1,7 @@
 'use server'
 
 import { revalidatePath } from 'next/cache'
-import { eq } from 'drizzle-orm'
+import { eq, isNull, and } from 'drizzle-orm'
 import { z } from 'zod'
 import { db } from '@/database/client'
 import { posts, matches } from '@/database/schema'
@@ -119,7 +119,10 @@ export async function deletePostAction(formData: FormData): Promise<void> {
   const id = formData.get('id') as string | null
   if (!id) return
 
-  await db.delete(posts).where(eq(posts.id, id))
+  await db
+    .update(posts)
+    .set({ deletedAt: new Date() })
+    .where(and(eq(posts.id, id), isNull(posts.deletedAt)))
   revalidateAll()
 }
 

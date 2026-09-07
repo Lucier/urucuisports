@@ -12,6 +12,7 @@ import {
   type RoundFormState,
   type MatchFormState,
 } from '@/app/admin/rodadas/actions'
+import Image from 'next/image'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -122,11 +123,13 @@ function TeamAvatar({ name, logo }: { name: string | null; logo: string | null }
         {(name ?? '?').charAt(0)}
       </div>
       {logo && (
-        <img
+        <Image
           src={logo}
           alt={name ?? ''}
-          className="absolute inset-0 h-full w-full rounded-full border border-slate-100 object-contain bg-slate-50"
-          onError={(e) => { e.currentTarget.style.display = 'none' }}
+          fill
+          sizes="24px"
+          className="rounded-full border border-slate-100 object-contain bg-slate-50"
+          onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
         />
       )}
     </div>

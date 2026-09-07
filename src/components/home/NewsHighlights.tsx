@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { asc, desc, eq, gt } from 'drizzle-orm'
+import { asc, desc, eq, gt, isNull, and } from 'drizzle-orm'
 import { db } from '@/database/client'
 import { posts, categories, users, advertisers } from '@/database/schema'
 import { NewsCarousel } from './NewsCarousel'
@@ -27,7 +27,7 @@ export async function NewsHighlights() {
       .from(posts)
       .leftJoin(categories, eq(posts.categoryId, categories.id))
       .leftJoin(users, eq(posts.authorId, users.id))
-      .where(gt(posts.relevancia, 0))
+      .where(and(gt(posts.relevancia, 0), isNull(posts.deletedAt)))
       .orderBy(asc(posts.relevancia), desc(posts.createdAt))
       .limit(5),
 
@@ -42,7 +42,7 @@ export async function NewsHighlights() {
       })
       .from(posts)
       .innerJoin(categories, eq(posts.categoryId, categories.id))
-      .where(eq(categories.slug, 'futebol-local'))
+      .where(and(eq(categories.slug, 'futebol-local'), isNull(posts.deletedAt)))
       .orderBy(desc(posts.createdAt))
       .limit(4),
 
@@ -152,7 +152,9 @@ export async function NewsHighlights() {
                 <SafeImage
                   src={adv.logoUrl}
                   alt={adv.name}
-                  className="max-h-24 max-w-[180px] object-contain"
+                  width={180}
+                  height={96}
+                  className="object-contain"
                 />
               ) : (
                 <span className="px-4 text-center text-lg font-bold text-slate-700">

@@ -37,5 +37,27 @@ services:
       start_period: 40s
     restart: unless-stopped
 
+  db-backup:
+    image: postgres:16-alpine
+    environment:
+      PGPASSWORD: ${DB_PASSWORD}
+    volumes:
+      - ./backups:/backups
+    entrypoint: >
+      sh -c "
+        mkdir -p /backups &&
+        while true; do
+          FILENAME=/backups/urucuisportes-$$(date +%Y%m%d-%H%M%S).sql.gz &&
+          pg_dump -h postgres -U $${DB_USER:-postgres} urucuisportes | gzip > $$FILENAME &&
+          echo \"Backup: $$FILENAME\" &&
+          find /backups -name '*.sql.gz' -mtime +7 -delete &&
+          sleep 86400;
+        done
+      "
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+
 volumes:
   postgres_data:

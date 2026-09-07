@@ -1,7 +1,7 @@
 import { headers } from 'next/headers'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
-import { desc, eq, count, asc, and, gte, lt, inArray, sql } from 'drizzle-orm'
+import { desc, eq, count, asc, and, gte, lt, inArray, sql, isNull } from 'drizzle-orm'
 import { alias } from 'drizzle-orm/pg-core'
 import { db } from '@/database/client'
 import {
@@ -215,6 +215,7 @@ export default async function DashboardPage({
       .from(posts)
       .leftJoin(categories, eq(posts.categoryId, categories.id))
       .leftJoin(users, eq(posts.authorId, users.id))
+      .where(isNull(posts.deletedAt))
       .orderBy(desc(posts.createdAt))
       .limit(5),
 

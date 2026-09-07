@@ -1,12 +1,12 @@
 import type { Metadata } from 'next'
-import { desc, eq } from 'drizzle-orm'
+import { desc, eq, isNull, and } from 'drizzle-orm'
 import { db } from '@/database/client'
 import { posts, categories, users } from '@/database/schema'
 import { CategoryFilter } from '@/components/news/CategoryFilter'
 import { PostCard } from '@/components/news/PostCard'
 
 export const metadata: Metadata = {
-  title: 'Notícias | Urucuí Esportes',
+  title: 'Notícias',
   description: 'Todas as notícias do mundo esportivo.',
 }
 
@@ -17,43 +17,33 @@ interface PageProps {
 export default async function NoticiasPage({ searchParams }: PageProps) {
   const { categoria } = await searchParams
 
+  const baseSelect = {
+    id: posts.id,
+    title: posts.title,
+    slug: posts.slug,
+    content: posts.content,
+    imageUrl: posts.imageUrl,
+    createdAt: posts.createdAt,
+    categoryName: categories.name,
+    categorySlug: categories.slug,
+    authorName: users.name,
+  }
+
   const [allCategories, rows] = await Promise.all([
     db.select().from(categories).orderBy(categories.name),
 
-    categoria
-      ? db
-          .select({
-            id: posts.id,
-            title: posts.title,
-            slug: posts.slug,
-            content: posts.content,
-            imageUrl: posts.imageUrl,
-            createdAt: posts.createdAt,
-            categoryName: categories.name,
-            categorySlug: categories.slug,
-            authorName: users.name,
-          })
-          .from(posts)
-          .leftJoin(categories, eq(posts.categoryId, categories.id))
-          .leftJoin(users, eq(posts.authorId, users.id))
-          .where(eq(categories.slug, categoria))
-          .orderBy(desc(posts.createdAt))
-      : db
-          .select({
-            id: posts.id,
-            title: posts.title,
-            slug: posts.slug,
-            content: posts.content,
-            imageUrl: posts.imageUrl,
-            createdAt: posts.createdAt,
-            categoryName: categories.name,
-            categorySlug: categories.slug,
-            authorName: users.name,
-          })
-          .from(posts)
-          .leftJoin(categories, eq(posts.categoryId, categories.id))
-          .leftJoin(users, eq(posts.authorId, users.id))
-          .orderBy(desc(posts.createdAt)),
+    db
+      .select(baseSelect)
+      .from(posts)
+      .leftJoin(categories, eq(posts.categoryId, categories.id))
+      .leftJoin(users, eq(posts.authorId, users.id))
+      .where(
+        categoria
+          ? and(isNull(posts.deletedAt), eq(categories.slug, categoria))
+          : isNull(posts.deletedAt),
+      )
+      .orderBy(desc(posts.createdAt))
+      .limit(100),
   ])
 
   return (

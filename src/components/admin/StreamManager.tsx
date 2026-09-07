@@ -10,6 +10,7 @@ import {
 } from '@/app/admin/transmissoes/actions'
 import { toThumbnailUrl } from '@/lib/youtube'
 import { cn } from '@/shared/utils'
+import Image from 'next/image'
 
 type Stream = {
   id: string
@@ -203,11 +204,13 @@ export function StreamManager({ streams, totalCount }: { streams: Stream[]; tota
                   {/* Thumbnail */}
                   <div className="relative h-16 w-28 flex-shrink-0 overflow-hidden rounded-lg bg-slate-900">
                     {thumb && (
-                      <img
+                      <Image
                         src={thumb}
                         alt=""
-                        className="h-full w-full object-cover"
-                        onError={(e) => { e.currentTarget.style.display = 'none' }}
+                        fill
+                        sizes="112px"
+                        className="object-cover"
+                        onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
                       />
                     )}
                     <div className="absolute inset-0 flex items-center justify-center">

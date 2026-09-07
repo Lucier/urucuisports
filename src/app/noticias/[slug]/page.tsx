@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import { eq } from 'drizzle-orm'
+import { eq, isNull, and } from 'drizzle-orm'
 import { db } from '@/database/client'
 import { posts, categories, users } from '@/database/schema'
 import { SafeImage } from '@/components/ui/SafeImage'
@@ -14,21 +14,38 @@ interface PageProps {
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params
   const [post] = await db
-    .select({ title: posts.title, content: posts.content })
+    .select({ title: posts.title, content: posts.content, imageUrl: posts.imageUrl })
     .from(posts)
-    .where(eq(posts.slug, slug))
+    .where(and(eq(posts.slug, slug), isNull(posts.deletedAt)))
     .limit(1)
 
   if (!post) return {}
 
+  const description = post.content.slice(0, 155)
+
   return {
-    title: `${post.title} | Urucuí Esportes`,
-    description: post.content.slice(0, 155),
+    title: post.title,
+    description,
+    openGraph: {
+      title: post.title,
+      description,
+      type: 'article',
+      images: post.imageUrl ? [{ url: post.imageUrl, width: 1200, height: 630 }] : [],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: post.title,
+      description,
+      images: post.imageUrl ? [post.imageUrl] : [],
+    },
   }
 }
 
 export async function generateStaticParams() {
-  const slugs = await db.select({ slug: posts.slug }).from(posts)
+  const slugs = await db
+    .select({ slug: posts.slug })
+    .from(posts)
+    .where(isNull(posts.deletedAt))
   return slugs.map(({ slug }) => ({ slug }))
 }
 
@@ -50,7 +67,7 @@ export default async function NoticiaPage({ params }: PageProps) {
     .from(posts)
     .leftJoin(categories, eq(posts.categoryId, categories.id))
     .leftJoin(users, eq(posts.authorId, users.id))
-    .where(eq(posts.slug, slug))
+    .where(and(eq(posts.slug, slug), isNull(posts.deletedAt)))
     .limit(1)
 
   if (!post) notFound()

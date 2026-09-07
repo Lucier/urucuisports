@@ -137,6 +137,7 @@ export const posts = pgTable(
     authorId: uuid('author_id').references(() => users.id),
     relevancia: integer('relevancia').default(1).notNull(),
     createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+    deletedAt: timestamp('deleted_at', { withTimezone: true }),
   },
   (table) => [
     index('idx_posts_slug').on(table.slug),

@@ -2,6 +2,7 @@
 
 import { useActionState, useState } from 'react'
 import { useFormStatus } from 'react-dom'
+import Image from 'next/image'
 import { upsertAlbumAction, deleteAlbumAction, type AlbumFormState } from '@/app/admin/fotos/actions'
 import { formatDate } from '@/shared/utils'
 
@@ -164,12 +165,15 @@ export function PhotoAlbumManager({ albums, totalCount }: { albums: Album[]; tot
                   <tr key={album.id} className="hover:bg-slate-50/50">
                     <td className="px-4 py-3">
                       <div className="flex items-center gap-3">
-                        <div className="h-10 w-10 flex-shrink-0 overflow-hidden rounded-lg bg-gradient-to-br from-emerald-700 to-slate-900">
+                        <div className="relative h-10 w-10 flex-shrink-0 overflow-hidden rounded-lg bg-gradient-to-br from-emerald-700 to-slate-900">
                           {album.coverUrl && (
-                            <img
+                            <Image
                               src={album.coverUrl}
                               alt=""
-                              className="h-full w-full object-cover"
+                              fill
+                              sizes="40px"
+                              className="object-cover"
+                              onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
                             />
                           )}
                         </div>
