@@ -5,7 +5,7 @@ import { db } from '@/database/client'
 import { leagues, teams, matches } from '@/database/schema'
 
 export const metadata: Metadata = {
-  title: 'Estatísticas | Urucuí Esportes',
+  title: 'Estatísticas | Urucuí Sports',
   description: 'Tabelas, artilharia e calendário das competições.',
 }
 

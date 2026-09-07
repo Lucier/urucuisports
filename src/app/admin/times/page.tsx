@@ -6,7 +6,7 @@ import { teams } from '@/database/schema'
 import { TeamManager } from '@/components/admin/TeamManager'
 import { Pagination } from '@/components/admin/Pagination'
 
-export const metadata = { title: 'Times — Admin | Urucuí Esportes' }
+export const metadata = { title: 'Times — Admin | Urucuí Sports' }
 
 const PAGE_SIZE = 10
 

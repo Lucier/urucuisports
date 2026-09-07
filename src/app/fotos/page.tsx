@@ -6,7 +6,7 @@ import { SafeImage } from '@/components/ui/SafeImage'
 import { formatDate } from '@/shared/utils'
 
 export const metadata: Metadata = {
-  title: 'Fotos | Urucuí Esportes',
+  title: 'Fotos | Urucuí Sports',
   description: 'Galerias de fotos dos campeonatos e eventos esportivos.',
 }
 

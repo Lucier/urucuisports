@@ -3,4 +3,4 @@ Allow: /
 Disallow: /admin
 Disallow: /api/
 
-Sitemap: https://urucuisportes.com/sitemap.xml
+Sitemap: https://urucuisports.com/sitemap.xml

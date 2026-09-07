@@ -9,7 +9,7 @@ import { RoundManager } from '@/components/admin/RoundManager'
 import { Pagination } from '@/components/admin/Pagination'
 import { SafeImage } from '@/components/ui/SafeImage'
 
-export const metadata = { title: 'Rodadas — Admin | Urucuí Esportes' }
+export const metadata = { title: 'Rodadas — Admin | Urucuí Sports' }
 
 const PAGE_SIZE = 10
 

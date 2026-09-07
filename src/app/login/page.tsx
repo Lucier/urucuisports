@@ -67,7 +67,7 @@ export default function LoginPage() {
                 type="email"
                 autoComplete="email"
                 required
-                placeholder="admin@urucuisportes.com"
+                placeholder="admin@urucuisports.com"
                 className="w-full rounded-lg border border-slate-200 px-4 py-2.5 text-sm text-slate-900 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20"
               />
             </div>

@@ -7,24 +7,24 @@ import { Footer } from '@/components/layout/Footer'
 const geistSans = Geist({ variable: '--font-geist-sans', subsets: ['latin'] })
 const geistMono = Geist_Mono({ variable: '--font-geist-mono', subsets: ['latin'] })
 
-const BASE_URL = (process.env.NEXT_PUBLIC_API_URL ?? 'https://urucuisportes.com').replace(/\/$/, '')
+const BASE_URL = (process.env.NEXT_PUBLIC_API_URL ?? 'https://urucuisports.com').replace(/\/$/, '')
 
 export const metadata: Metadata = {
   metadataBase: new URL(BASE_URL),
   title: {
-    template: '%s | Urucuí Esportes',
-    default: 'Urucuí Esportes',
+    template: '%s | Urucuí Sports',
+    default: 'Urucuí Sports',
   },
   description: 'Seu portal de notícias, resultados e classificações esportivas.',
   openGraph: {
     type: 'website',
     locale: 'pt_BR',
-    siteName: 'Urucuí Esportes',
-    images: [{ url: '/og-default.jpg', width: 1200, height: 630, alt: 'Urucuí Esportes' }],
+    siteName: 'Urucuí Sports',
+    images: [{ url: '/og-default.jpg', width: 1200, height: 630, alt: 'Urucuí Sports' }],
   },
   twitter: {
     card: 'summary_large_image',
-    site: '@urucuisportes',
+    site: '@urucuisports',
   },
   robots: { index: true, follow: true },
 }

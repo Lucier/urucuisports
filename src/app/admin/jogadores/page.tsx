@@ -8,7 +8,7 @@ import { PlayerManager } from '@/components/admin/PlayerManager'
 import { Pagination } from '@/components/admin/Pagination'
 import { SafeImage } from '@/components/ui/SafeImage'
 
-export const metadata = { title: 'Jogadores — Admin | Urucuí Esportes' }
+export const metadata = { title: 'Jogadores — Admin | Urucuí Sports' }
 
 const PAGE_SIZE = 10
 

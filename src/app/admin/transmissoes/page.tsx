@@ -6,7 +6,7 @@ import { streams } from '@/database/schema'
 import { StreamManager } from '@/components/admin/StreamManager'
 import { Pagination } from '@/components/admin/Pagination'
 
-export const metadata = { title: 'Transmissões — Admin | Urucuí Esportes' }
+export const metadata = { title: 'Transmissões — Admin | Urucuí Sports' }
 
 const PAGE_SIZE = 10
 

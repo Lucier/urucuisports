@@ -9,7 +9,7 @@ import { LeagueTeamsPanel } from '@/components/admin/LeagueTeamsPanel'
 import { Pagination } from '@/components/admin/Pagination'
 import { SafeImage } from '@/components/ui/SafeImage'
 
-export const metadata = { title: 'Ligas — Admin | Urucuí Esportes' }
+export const metadata = { title: 'Ligas — Admin | Urucuí Sports' }
 
 const PAGE_SIZE = 10
 

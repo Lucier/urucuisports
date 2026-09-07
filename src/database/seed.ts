@@ -161,12 +161,12 @@ async function seed() {
     hash('User@123!', SALT_ROUNDS),
   ])
   const [admin, editor] = await db.insert(users).values([
-    { name: 'Administrador', email: 'admin@urucuisportes.com', password: adminPw, role: 'ADMIN' },
-    { name: 'Carlos Mendes', email: 'editor@urucuisportes.com', password: userPw, role: 'USER' },
+    { name: 'Administrador', email: 'admin@urucuisports.com', password: adminPw, role: 'ADMIN' },
+    { name: 'Carlos Mendes', email: 'editor@urucuisports.com', password: userPw, role: 'USER' },
   ]).returning()
   console.log('  ✓ 2 usuários')
-  console.log('    admin@urucuisportes.com / Admin@123!')
-  console.log('    editor@urucuisportes.com / User@123!\n')
+  console.log('    admin@urucuisports.com / Admin@123!')
+  console.log('    editor@urucuisports.com / User@123!\n')
 
   // ── Categorias ───────────────────────────────────────────────────────────────
   const [catFutebol, catEntrevistas, catEsportes, catResultados, catVeteranos, catAnalise] = await db
@@ -429,7 +429,7 @@ async function seed() {
     {
       title: 'Entrevista exclusiva: João Silva fala sobre artilharia e pressão',
       slug: 'entrevista-joao-silva-artilheiro-serie-a',
-      content: `Com sete gols na Série A, João Silva é o artilheiro isolado do torneio. Em entrevista exclusiva ao Urucuí Esportes, o atacante do Urucuí FC revelou sua rotina de treinos e como lida com a responsabilidade de liderar o ataque. "Prefiro focar no coletivo. Os gols vêm como consequência do trabalho em equipe", declarou.`,
+      content: `Com sete gols na Série A, João Silva é o artilheiro isolado do torneio. Em entrevista exclusiva ao Urucuí Sports, o atacante do Urucuí FC revelou sua rotina de treinos e como lida com a responsabilidade de liderar o ataque. "Prefiro focar no coletivo. Os gols vêm como consequência do trabalho em equipe", declarou.`,
       categoryId: catEntrevistas.id, authorId: editor.id, relevancia: 4,
     },
     {

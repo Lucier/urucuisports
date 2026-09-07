@@ -6,7 +6,7 @@ import { categories, posts } from '@/database/schema'
 import { PostFormSection } from '@/components/admin/PostFormSection'
 import { Pagination } from '@/components/admin/Pagination'
 
-export const metadata = { title: 'Notícias | Admin | Urucuí Esportes' }
+export const metadata = { title: 'Notícias | Admin | Urucuí Sports' }
 
 const PAGE_SIZE = 10
 

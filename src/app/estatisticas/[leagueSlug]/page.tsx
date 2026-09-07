@@ -26,7 +26,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   if (!league) return {}
   return {
-    title: `${league.name} | Estatísticas | Urucuí Esportes`,
+    title: `${league.name} | Estatísticas | Urucuí Sports`,
     description: `Classificação, artilharia e calendário do ${league.name}.`,
   }
 }

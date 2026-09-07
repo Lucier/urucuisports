@@ -8,7 +8,7 @@ import { SafeImage } from '@/components/ui/SafeImage'
 import { cn } from '@/shared/utils'
 
 export const metadata: Metadata = {
-  title: 'Transmissões | Urucuí Esportes',
+  title: 'Transmissões | Urucuí Sports',
   description: 'Assista às partidas ao vivo pelo YouTube.',
 }
 

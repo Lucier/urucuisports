@@ -20,7 +20,7 @@ import { usersRepository } from '@/modules/users/repository'
 import { UserRole } from '@/shared/types/auth'
 import { LeagueSelect } from './LeagueSelect'
 
-export const metadata = { title: 'Dashboard | Urucuí Esportes' }
+export const metadata = { title: 'Dashboard | Urucuí Sports' }
 
 // ─── Stat card ────────────────────────────────────────────────────────────────
 

@@ -15,7 +15,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const { id } = await params
   const [stream] = await db.select({ title: streams.title }).from(streams).where(eq(streams.id, id)).limit(1)
   if (!stream) return {}
-  return { title: `${stream.title} | Transmissões | Urucuí Esportes` }
+  return { title: `${stream.title} | Transmissões | Urucuí Sports` }
 }
 
 const STATUS_LABEL: Record<string, string> = {

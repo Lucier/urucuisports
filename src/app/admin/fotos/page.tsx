@@ -6,7 +6,7 @@ import { photoAlbums } from '@/database/schema'
 import { PhotoAlbumManager } from '@/components/admin/PhotoAlbumManager'
 import { Pagination } from '@/components/admin/Pagination'
 
-export const metadata = { title: 'Fotos — Admin | Urucuí Esportes' }
+export const metadata = { title: 'Fotos — Admin | Urucuí Sports' }
 
 const PAGE_SIZE = 10
 

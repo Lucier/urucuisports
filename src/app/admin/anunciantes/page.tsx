@@ -6,7 +6,7 @@ import { advertisers } from '@/database/schema'
 import { AdvertiserManager } from '@/components/admin/AdvertiserManager'
 import { Pagination } from '@/components/admin/Pagination'
 
-export const metadata = { title: 'Anunciantes — Admin | Urucuí Esportes' }
+export const metadata = { title: 'Anunciantes — Admin | Urucuí Sports' }
 
 const PAGE_SIZE = 10
 

@@ -4,7 +4,7 @@ import { posts, leagues } from '@/database/schema'
 import { isNull, desc } from 'drizzle-orm'
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const base = (process.env.NEXT_PUBLIC_API_URL ?? 'https://urucuisportes.com').replace(/\/$/, '')
+  const base = (process.env.NEXT_PUBLIC_API_URL ?? 'https://urucuisports.com').replace(/\/$/, '')
 
   const [allPosts, allLeagues] = await Promise.all([
     db

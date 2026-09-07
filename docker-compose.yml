@@ -4,7 +4,7 @@ services:
     environment:
       POSTGRES_USER: ${DB_USER:-postgres}
       POSTGRES_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD is required}
-      POSTGRES_DB: urucuisportes
+      POSTGRES_DB: urucuisports
     command: postgres -c max_connections=200
     ports:
       - '5432:5432'
@@ -23,7 +23,7 @@ services:
       - '3000:3000'
     environment:
       NODE_ENV: production
-      DATABASE_URL: postgresql://${DB_USER:-postgres}:${DB_PASSWORD}@postgres:5432/urucuisportes
+      DATABASE_URL: postgresql://${DB_USER:-postgres}:${DB_PASSWORD}@postgres:5432/urucuisports
       NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:3000}
       JWT_SECRET: ${JWT_SECRET:?JWT_SECRET is required}
     depends_on:
@@ -47,8 +47,8 @@ services:
       sh -c "
         mkdir -p /backups &&
         while true; do
-          FILENAME=/backups/urucuisportes-$$(date +%Y%m%d-%H%M%S).sql.gz &&
-          pg_dump -h postgres -U $${DB_USER:-postgres} urucuisportes | gzip > $$FILENAME &&
+          FILENAME=/backups/urucuisports-$$(date +%Y%m%d-%H%M%S).sql.gz &&
+          pg_dump -h postgres -U $${DB_USER:-postgres} urucuisports | gzip > $$FILENAME &&
           echo \"Backup: $$FILENAME\" &&
           find /backups -name '*.sql.gz' -mtime +7 -delete &&
           sleep 86400;
