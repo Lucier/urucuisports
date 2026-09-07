@@ -4,7 +4,7 @@ import { revalidatePath } from 'next/cache'
 import { eq, and, max, isNull } from 'drizzle-orm'
 import { z } from 'zod'
 import { db } from '@/database/client'
-import { rounds, matches, matchGoals, standings, topScorers, players } from '@/database/schema'
+import { rounds, matches, matchGoals, standings, topScorers, players, teams } from '@/database/schema'
 import { requireRole } from '@/lib/auth'
 import { UserRole } from '@/shared/types/auth'
 
@@ -195,6 +195,18 @@ async function recalculateLeagueStats(leagueId: string) {
     }
   }
 
+  // Garante que todos os times da liga aparecem no standings (inclusive com 0 jogos)
+  const allLeagueTeams = await db
+    .select({ id: teams.id })
+    .from(teams)
+    .where(eq(teams.leagueId, leagueId))
+
+  for (const team of allLeagueTeams) {
+    if (!standingMap.has(team.id)) {
+      standingMap.set(team.id, { teamId: team.id, leagueId, played: 0, won: 0, drawn: 0, lost: 0, goalsFor: 0, goalsAgainst: 0, points: 0 })
+    }
+  }
+
   await db.delete(standings).where(eq(standings.leagueId, leagueId))
   const standingValues = Array.from(standingMap.values())
   if (standingValues.length > 0) {
@@ -202,30 +214,34 @@ async function recalculateLeagueStats(leagueId: string) {
   }
 
   // Top scorers: agrega gols por jogador a partir de matchGoals das partidas da liga
-  const goalRows = await db
-    .select({
-      playerName: players.name,
-      teamId: matchGoals.teamId,
-      goals: matchGoals.goals,
-    })
-    .from(matchGoals)
-    .innerJoin(matches, eq(matchGoals.matchId, matches.id))
-    .innerJoin(players, eq(matchGoals.playerId, players.id))
-    .where(eq(matches.leagueId, leagueId))
+  try {
+    const goalRows = await db
+      .select({
+        playerName: players.name,
+        teamId: matchGoals.teamId,
+        goals: matchGoals.goals,
+      })
+      .from(matchGoals)
+      .innerJoin(matches, eq(matchGoals.matchId, matches.id))
+      .innerJoin(players, eq(matchGoals.playerId, players.id))
+      .where(eq(matches.leagueId, leagueId))
 
-  const scorerMap = new Map<string, { playerName: string; teamId: string; leagueId: string; goals: number; assists: number }>()
-  for (const row of goalRows) {
-    const key = `${row.playerName}:${row.teamId}`
-    if (!scorerMap.has(key)) {
-      scorerMap.set(key, { playerName: row.playerName, teamId: row.teamId, leagueId, goals: 0, assists: 0 })
+    const scorerMap = new Map<string, { playerName: string; teamId: string; leagueId: string; goals: number; assists: number }>()
+    for (const row of goalRows) {
+      const key = `${row.playerName}:${row.teamId}`
+      if (!scorerMap.has(key)) {
+        scorerMap.set(key, { playerName: row.playerName, teamId: row.teamId, leagueId, goals: 0, assists: 0 })
+      }
+      scorerMap.get(key)!.goals += row.goals
     }
-    scorerMap.get(key)!.goals += row.goals
-  }
 
-  await db.delete(topScorers).where(eq(topScorers.leagueId, leagueId))
-  const scorerValues = Array.from(scorerMap.values())
-  if (scorerValues.length > 0) {
-    await db.insert(topScorers).values(scorerValues)
+    await db.delete(topScorers).where(eq(topScorers.leagueId, leagueId))
+    const scorerValues = Array.from(scorerMap.values())
+    if (scorerValues.length > 0) {
+      await db.insert(topScorers).values(scorerValues)
+    }
+  } catch (err) {
+    console.error('[recalculateLeagueStats] falha ao recalcular artilharia:', err)
   }
 }
 
