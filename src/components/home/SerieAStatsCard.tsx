@@ -72,12 +72,12 @@ export async function SerieAStatsCard() {
           </div>
 
           {/* Cabeçalho colunas */}
-          <div className="grid grid-cols-[1.25rem_1fr_2rem_1.75rem_2rem] gap-x-2 px-4 py-1 text-xs font-semibold uppercase tracking-wide text-slate-400">
+          <div className="grid grid-cols-[1.25rem_1fr_2rem_2rem_1.75rem] gap-x-2 px-4 py-1 text-xs font-semibold uppercase tracking-wide text-slate-400">
             <span>#</span>
             <span>Time</span>
-            <span className="text-center">J</span>
-            <span className="text-center">DG</span>
             <span className="text-center font-bold text-slate-600">Pts</span>
+            <span className="text-center">J</span>
+            <span className="text-center">SG</span>
           </div>
 
           <div className="divide-y divide-slate-50">
@@ -89,7 +89,7 @@ export async function SerieAStatsCard() {
                 <div
                   key={row.id}
                   className={cn(
-                    'grid grid-cols-[1.25rem_1fr_2rem_1.75rem_2rem] items-center gap-x-2 px-4 py-2.5',
+                    'grid grid-cols-[1.25rem_1fr_2rem_2rem_1.75rem] items-center gap-x-2 px-4 py-2.5',
                     isClassificado && 'border-l-4 border-l-emerald-500',
                     isRebaixamento && 'border-l-4 border-l-red-400',
                   )}
@@ -101,11 +101,11 @@ export async function SerieAStatsCard() {
                     {i + 1}
                   </span>
                   <span className="truncate text-sm font-semibold text-slate-800">{row.teamName}</span>
+                  <span className="text-center text-sm font-bold text-slate-900">{row.points}</span>
                   <span className="text-center text-xs text-slate-500">{row.played}</span>
                   <span className="text-center text-xs text-slate-500">
                     {gd > 0 ? `+${gd}` : gd}
                   </span>
-                  <span className="text-center text-sm font-bold text-slate-900">{row.points}</span>
                 </div>
               )
             })}

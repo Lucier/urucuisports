@@ -44,13 +44,13 @@ export async function StandingsWidget() {
         </div>
 
         {/* Cabeçalho */}
-        <div className="grid grid-cols-[1.5rem_1fr_1.75rem_2rem_2rem_2.5rem] gap-2 px-4 py-2 text-xs font-semibold uppercase tracking-wide text-gray-400">
+        <div className="grid grid-cols-[1.5rem_1fr_2.5rem_1.75rem_2rem_2rem] gap-2 px-4 py-2 text-xs font-semibold uppercase tracking-wide text-gray-400">
           <span>#</span>
           <span>Time</span>
-          <span className="text-center">J</span>
-          <span className="text-center">DG</span>
-          <span className="text-center">GF</span>
           <span className="text-right text-slate-600">Pts</span>
+          <span className="text-center">J</span>
+          <span className="text-center">SG</span>
+          <span className="text-center">GF</span>
         </div>
 
         <div className="divide-y divide-slate-50">
@@ -62,7 +62,7 @@ export async function StandingsWidget() {
               <div
                 key={row.id}
                 className={cn(
-                  'grid grid-cols-[1.5rem_1fr_1.75rem_2rem_2rem_2.5rem] items-center gap-2 px-4 py-3',
+                  'grid grid-cols-[1.5rem_1fr_2.5rem_1.75rem_2rem_2rem] items-center gap-2 px-4 py-3',
                   isLibertadores && 'border-l-4 border-l-emerald-500',
                 )}
               >
@@ -77,12 +77,12 @@ export async function StandingsWidget() {
                 <span className="truncate text-sm font-semibold text-slate-800">
                   {row.teamName}
                 </span>
+                <span className="text-right text-sm font-bold text-slate-900">{row.points}</span>
                 <span className="text-center text-sm text-gray-500">{row.played}</span>
                 <span className="text-center text-sm text-gray-500">
                   {gd > 0 ? `+${gd}` : gd}
                 </span>
                 <span className="text-center text-sm text-gray-500">{row.goalsFor}</span>
-                <span className="text-right text-sm font-bold text-slate-900">{row.points}</span>
               </div>
             )
           })}

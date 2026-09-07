@@ -1,8 +1,8 @@
+import { db } from '@/database/client'
+import { leagues, matches, teams } from '@/database/schema'
+import { cn } from '@/shared/utils'
 import { eq } from 'drizzle-orm'
 import { alias } from 'drizzle-orm/pg-core'
-import { db } from '@/database/client'
-import { matches, teams, leagues } from '@/database/schema'
-import { cn } from '@/shared/utils'
 
 type MatchRow = {
   id: string
@@ -48,7 +48,7 @@ function MatchItem({ match }: { match: MatchRow }) {
         <div className="flex flex-shrink-0 flex-col items-center gap-0.5">
           {isLive ? (
             <>
-              <span className="text-sm font-bold tabular-nums text-slate-900">
+              <span className="text-sm font-bold text-slate-900 tabular-nums">
                 {match.homeScore ?? 0}
                 <span className="mx-0.5 text-slate-300">×</span>
                 {match.awayScore ?? 0}
@@ -58,7 +58,7 @@ function MatchItem({ match }: { match: MatchRow }) {
                   <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-red-400 opacity-75" />
                   <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-red-500" />
                 </span>
-                AO VIVO
+                Assistir Agora
               </span>
             </>
           ) : (
@@ -158,7 +158,7 @@ export async function MatchesCard() {
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-red-400 opacity-75" />
                 <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-red-500" />
               </span>
-              <span className="text-xs font-bold uppercase tracking-widest text-red-600">
+              <span className="text-xs font-bold tracking-widest text-red-600 uppercase">
                 Ao Vivo
               </span>
             </div>
@@ -172,7 +172,7 @@ export async function MatchesCard() {
 
         {scheduledRows.length > 0 && (
           <div>
-            <p className="mb-2 text-xs font-bold uppercase tracking-widest text-slate-400">
+            <p className="mb-2 text-xs font-bold tracking-widest text-slate-400 uppercase">
               Próximos Jogos
             </p>
             <div className="space-y-2">

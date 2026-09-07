@@ -1,9 +1,9 @@
-import Link from 'next/link'
+import { db } from '@/database/client'
+import { leagues, matches, teams } from '@/database/schema'
+import { cn } from '@/shared/utils'
 import { eq } from 'drizzle-orm'
 import { alias } from 'drizzle-orm/pg-core'
-import { db } from '@/database/client'
-import { matches, teams, leagues } from '@/database/schema'
-import { cn } from '@/shared/utils'
+import Link from 'next/link'
 
 type MatchRow = {
   id: string
@@ -33,7 +33,7 @@ function StatusBadge({ status, date }: { status: MatchRow['status']; date: Date 
     return <span className="text-xs text-gray-400">Encerrado</span>
   }
   if (status === 'POSTPONED') {
-    return <span className="text-xs text-amber-500 font-medium">Adiado</span>
+    return <span className="text-xs font-medium text-amber-500">Adiado</span>
   }
   return (
     <span className="text-xs text-gray-400">
@@ -73,7 +73,7 @@ function MatchCard({ match }: { match: MatchRow }) {
       {/* Placar / Horário */}
       <div className="mx-2 flex flex-shrink-0 flex-col items-center gap-1">
         {showScore ? (
-          <span className="text-base font-bold tabular-nums text-slate-900 sm:text-xl">
+          <span className="text-base font-bold text-slate-900 tabular-nums sm:text-xl">
             {match.homeScore ?? 0}
             <span className="mx-1 text-slate-300">×</span>
             {match.awayScore ?? 0}
@@ -92,7 +92,9 @@ function MatchCard({ match }: { match: MatchRow }) {
       {/* Time visitante */}
       <div className="flex min-w-0 flex-1 items-center gap-2">
         <div className="h-7 w-7 flex-shrink-0 rounded-full bg-gradient-to-br from-emerald-600 to-slate-900 sm:h-9 sm:w-9" />
-        <span className="truncate text-xs font-semibold text-slate-800 sm:text-sm">{match.awayTeamName}</span>
+        <span className="truncate text-xs font-semibold text-slate-800 sm:text-sm">
+          {match.awayTeamName}
+        </span>
       </div>
     </Tag>
   )
@@ -143,7 +145,7 @@ export async function MatchesSection() {
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-red-400 opacity-75" />
                 <span className="relative inline-flex h-2 w-2 rounded-full bg-red-500" />
               </span>
-              <span className="text-xs font-bold uppercase tracking-widest text-red-600">
+              <span className="text-xs font-bold tracking-widest text-red-600 uppercase">
                 Ao Vivo
               </span>
             </div>
@@ -157,7 +159,7 @@ export async function MatchesSection() {
 
         {finished.length > 0 && (
           <div>
-            <h3 className="mb-3 text-xs font-bold uppercase tracking-widest text-gray-400">
+            <h3 className="mb-3 text-xs font-bold tracking-widest text-gray-400 uppercase">
               Encerrados
             </h3>
             <div className="space-y-3">
@@ -170,7 +172,7 @@ export async function MatchesSection() {
 
         {scheduled.length > 0 && (
           <div>
-            <h3 className="mb-3 text-xs font-bold uppercase tracking-widest text-gray-400">
+            <h3 className="mb-3 text-xs font-bold tracking-widest text-gray-400 uppercase">
               Próximos Jogos
             </h3>
             <div className="space-y-3">

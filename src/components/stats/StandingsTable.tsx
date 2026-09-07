@@ -52,6 +52,7 @@ function TableRows({ rows }: { rows: StandingRow[] }) {
                 <span className="font-semibold text-slate-800">{row.teamName}</span>
               </div>
             </td>
+            <td className="px-2 py-3 text-center text-base font-bold text-slate-900 sm:px-4 sm:py-3.5">{row.points}</td>
             <td className="px-2 py-3 text-center text-slate-600 sm:px-4 sm:py-3.5">{row.played}</td>
             <td className="hidden px-2 py-3 text-center font-medium text-emerald-700 sm:table-cell sm:px-4 sm:py-3.5">{row.won}</td>
             <td className="hidden px-2 py-3 text-center text-slate-600 sm:table-cell sm:px-4 sm:py-3.5">{row.drawn}</td>
@@ -60,9 +61,6 @@ function TableRows({ rows }: { rows: StandingRow[] }) {
             <td className="hidden px-2 py-3 text-center text-slate-600 md:table-cell sm:px-4 sm:py-3.5">{row.goalsAgainst}</td>
             <td className="px-2 py-3 text-center font-medium text-slate-700 sm:px-4 sm:py-3.5">
               {gd > 0 ? `+${gd}` : gd}
-            </td>
-            <td className="px-2 py-3 text-right text-base font-bold text-slate-900 sm:px-4 sm:py-3.5">
-              {row.points}
             </td>
           </tr>
         )
@@ -77,6 +75,7 @@ function TableHead() {
       <tr className="border-b border-slate-100 bg-slate-50 text-xs font-semibold uppercase tracking-wide text-gray-400">
         <th className="w-8 px-2 py-3 text-left sm:w-10 sm:px-4">#</th>
         <th className="px-2 py-3 text-left sm:px-4">Time</th>
+        <th className="px-2 py-3 text-center font-bold text-slate-700 sm:px-4" title="Pontos">Pts</th>
         <th className="px-2 py-3 text-center sm:px-4" title="Jogos">J</th>
         <th className="hidden px-2 py-3 text-center sm:table-cell sm:px-4" title="Vitórias">V</th>
         <th className="hidden px-2 py-3 text-center sm:table-cell sm:px-4" title="Empates">E</th>
@@ -84,7 +83,6 @@ function TableHead() {
         <th className="hidden px-2 py-3 text-center md:table-cell sm:px-4" title="Gols Pró">GP</th>
         <th className="hidden px-2 py-3 text-center md:table-cell sm:px-4" title="Gols Contra">GC</th>
         <th className="px-2 py-3 text-center sm:px-4" title="Saldo de Gols">SG</th>
-        <th className="px-2 py-3 text-right font-bold text-slate-700 sm:px-4" title="Pontos">Pts</th>
       </tr>
     </thead>
   )
