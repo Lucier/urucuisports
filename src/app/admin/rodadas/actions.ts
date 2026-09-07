@@ -4,7 +4,7 @@ import { revalidatePath } from 'next/cache'
 import { eq, and, max, isNull } from 'drizzle-orm'
 import { z } from 'zod'
 import { db } from '@/database/client'
-import { rounds, matches, matchGoals } from '@/database/schema'
+import { rounds, matches, matchGoals, standings, topScorers, players } from '@/database/schema'
 import { requireRole } from '@/lib/auth'
 import { UserRole } from '@/shared/types/auth'
 
@@ -152,6 +152,83 @@ export async function deleteMatchAction(formData: FormData): Promise<void> {
   revalidate()
 }
 
+// ─── Recálculo de classificação e artilharia ──────────────────────────────────
+
+async function recalculateLeagueStats(leagueId: string) {
+  // Standings: recalcula a partir de todas as partidas FINISHED da liga
+  const finishedMatches = await db
+    .select({
+      homeTeamId: matches.homeTeamId,
+      awayTeamId: matches.awayTeamId,
+      homeScore: matches.homeScore,
+      awayScore: matches.awayScore,
+    })
+    .from(matches)
+    .where(and(eq(matches.leagueId, leagueId), eq(matches.status, 'FINISHED')))
+
+  type StandingEntry = {
+    teamId: string; leagueId: string
+    played: number; won: number; drawn: number; lost: number
+    goalsFor: number; goalsAgainst: number; points: number
+  }
+  const standingMap = new Map<string, StandingEntry>()
+
+  for (const m of finishedMatches) {
+    if (m.homeScore === null || m.awayScore === null) continue
+    const hs = m.homeScore
+    const as_ = m.awayScore
+    const pairs: [string, number, number][] = [
+      [m.homeTeamId, hs, as_],
+      [m.awayTeamId, as_, hs],
+    ]
+    for (const [teamId, gf, ga] of pairs) {
+      if (!standingMap.has(teamId)) {
+        standingMap.set(teamId, { teamId, leagueId, played: 0, won: 0, drawn: 0, lost: 0, goalsFor: 0, goalsAgainst: 0, points: 0 })
+      }
+      const e = standingMap.get(teamId)!
+      e.played++
+      e.goalsFor += gf
+      e.goalsAgainst += ga
+      if (gf > ga) { e.won++; e.points += 3 }
+      else if (gf < ga) { e.lost++ }
+      else { e.drawn++; e.points++ }
+    }
+  }
+
+  await db.delete(standings).where(eq(standings.leagueId, leagueId))
+  const standingValues = Array.from(standingMap.values())
+  if (standingValues.length > 0) {
+    await db.insert(standings).values(standingValues)
+  }
+
+  // Top scorers: agrega gols por jogador a partir de matchGoals das partidas da liga
+  const goalRows = await db
+    .select({
+      playerName: players.name,
+      teamId: matchGoals.teamId,
+      goals: matchGoals.goals,
+    })
+    .from(matchGoals)
+    .innerJoin(matches, eq(matchGoals.matchId, matches.id))
+    .innerJoin(players, eq(matchGoals.playerId, players.id))
+    .where(eq(matches.leagueId, leagueId))
+
+  const scorerMap = new Map<string, { playerName: string; teamId: string; leagueId: string; goals: number; assists: number }>()
+  for (const row of goalRows) {
+    const key = `${row.playerName}:${row.teamId}`
+    if (!scorerMap.has(key)) {
+      scorerMap.set(key, { playerName: row.playerName, teamId: row.teamId, leagueId, goals: 0, assists: 0 })
+    }
+    scorerMap.get(key)!.goals += row.goals
+  }
+
+  await db.delete(topScorers).where(eq(topScorers.leagueId, leagueId))
+  const scorerValues = Array.from(scorerMap.values())
+  if (scorerValues.length > 0) {
+    await db.insert(topScorers).values(scorerValues)
+  }
+}
+
 // ─── Placar e gols ────────────────────────────────────────────────────────────
 
 const scoreSchema = z.object({
@@ -209,6 +286,12 @@ export async function updateMatchScoreAction(
     }
   } catch {
     return { error: 'Erro ao salvar placar.' }
+  }
+
+  // Recalcula classificação e artilharia da liga
+  const [match] = await db.select({ leagueId: matches.leagueId }).from(matches).where(eq(matches.id, matchId)).limit(1)
+  if (match?.leagueId) {
+    await recalculateLeagueStats(match.leagueId)
   }
 
   revalidate()
