@@ -40,6 +40,31 @@ export const users = pgTable(
 
 export const usersRelations = relations(users, ({ many }) => ({
   posts: many(posts),
+  refreshTokens: many(refreshTokens),
+}))
+
+// ─── Refresh Tokens ───────────────────────────────────────────────────────────
+
+export const refreshTokens = pgTable(
+  'refresh_tokens',
+  {
+    id: uuid('id').defaultRandom().primaryKey(),
+    userId: uuid('user_id')
+      .notNull()
+      .references(() => users.id, { onDelete: 'cascade' }),
+    tokenHash: varchar('token_hash', { length: 64 }).notNull().unique(),
+    expiresAt: timestamp('expires_at', { withTimezone: true }).notNull(),
+    revokedAt: timestamp('revoked_at', { withTimezone: true }),
+    createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+  },
+  (table) => [
+    index('idx_refresh_tokens_user').on(table.userId),
+    index('idx_refresh_tokens_hash').on(table.tokenHash),
+  ],
+)
+
+export const refreshTokensRelations = relations(refreshTokens, ({ one }) => ({
+  user: one(users, { fields: [refreshTokens.userId], references: [users.id] }),
 }))
 
 // ─── Leagues ──────────────────────────────────────────────────────────────────

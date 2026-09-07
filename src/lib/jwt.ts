@@ -1,7 +1,7 @@
 import { SignJWT, jwtVerify, type JWTPayload as JosePayload } from 'jose'
 import type { JWTPayload } from '@/shared/types/auth'
 
-const TOKEN_EXPIRY = '7d'
+const TOKEN_EXPIRY = '1h'
 
 function getSecret(): Uint8Array {
   const secret = process.env.JWT_SECRET

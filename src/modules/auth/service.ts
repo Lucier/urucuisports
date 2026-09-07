@@ -3,6 +3,7 @@ import { usersRepository } from '@/modules/users/repository'
 import { signToken } from '@/lib/jwt'
 import { UserRole } from '@/shared/types/auth'
 import { AuthError, type AuthResult } from './types'
+import { refreshTokenRepository } from './refresh-token.repository'
 import type { LoginInput, RegisterInput } from './schemas'
 
 const BCRYPT_ROUNDS = 10
@@ -21,14 +22,14 @@ export const authService = {
       throw new AuthError('E-mail ou senha inválidos.', 401)
     }
 
-    const token = await signToken({
-      userId: user.id,
-      email: user.email,
-      role: user.role as UserRole,
-    })
+    const [token, refreshToken] = await Promise.all([
+      signToken({ userId: user.id, email: user.email, role: user.role as UserRole }),
+      refreshTokenRepository.create(user.id),
+    ])
 
     return {
       token,
+      refreshToken,
       user: { id: user.id, name: user.name, email: user.email, role: user.role },
     }
   },
@@ -47,14 +48,14 @@ export const authService = {
       password: hashedPassword,
     })
 
-    const token = await signToken({
-      userId: user.id,
-      email: user.email,
-      role: user.role as UserRole,
-    })
+    const [token, refreshToken] = await Promise.all([
+      signToken({ userId: user.id, email: user.email, role: user.role as UserRole }),
+      refreshTokenRepository.create(user.id),
+    ])
 
     return {
       token,
+      refreshToken,
       user: { id: user.id, name: user.name, email: user.email, role: user.role },
     }
   },

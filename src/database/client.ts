@@ -9,11 +9,13 @@ declare global {
   var _pgClient: postgres.Sql | undefined
 }
 
+const isProd = process.env.NODE_ENV === 'production'
+
 // Reuse the same client across hot reloads in development.
 // In production each process creates exactly one client.
 const client = globalThis._pgClient ?? postgres(connectionString, {
-  max: 3,
-  idle_timeout: 20,
+  max: isProd ? 20 : 3,
+  idle_timeout: isProd ? 60 : 20,
   connect_timeout: 10,
   prepare: false,
 })

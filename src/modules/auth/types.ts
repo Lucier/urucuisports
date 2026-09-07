@@ -9,6 +9,7 @@ export type AuthUser = {
 
 export type AuthResult = {
   token: string
+  refreshToken: string
   user: AuthUser
 }
 

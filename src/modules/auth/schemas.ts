@@ -15,7 +15,9 @@ export const registerSchema = z.object({
     .string()
     .min(8, 'Senha deve ter ao menos 8 caracteres')
     .regex(/[A-Z]/, 'Senha deve conter ao menos uma letra maiúscula')
-    .regex(/[0-9]/, 'Senha deve conter ao menos um número'),
+    .regex(/[a-z]/, 'Senha deve conter ao menos uma letra minúscula')
+    .regex(/[0-9]/, 'Senha deve conter ao menos um número')
+    .regex(/[^A-Za-z0-9]/, 'Senha deve conter ao menos um caractere especial'),
 })
 
 export type LoginInput = z.infer<typeof loginSchema>

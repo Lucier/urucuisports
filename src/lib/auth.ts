@@ -4,13 +4,24 @@ import { verifyToken } from './jwt'
 import { UserRole, type JWTPayload } from '@/shared/types/auth'
 
 export const AUTH_COOKIE = 'auth-token'
+export const REFRESH_COOKIE = 'refresh-token'
+
+const IS_PROD = process.env.NODE_ENV === 'production'
 
 export const COOKIE_OPTIONS = {
   httpOnly: true,
-  secure: process.env.NODE_ENV === 'production',
+  secure: IS_PROD,
   sameSite: 'lax' as const,
-  maxAge: 60 * 60 * 24 * 7,
+  maxAge: 60 * 60, // 1 hora — alinhado com TOKEN_EXPIRY em jwt.ts
   path: '/',
+}
+
+export const REFRESH_COOKIE_OPTIONS = {
+  httpOnly: true,
+  secure: IS_PROD,
+  sameSite: 'lax' as const,
+  maxAge: 60 * 60 * 24 * 7, // 7 dias
+  path: '/api/auth', // limita o envio do cookie apenas às rotas de auth
 }
 
 export async function getCurrentUser(): Promise<JWTPayload | null> {

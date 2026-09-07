@@ -2,9 +2,31 @@ import { NextRequest, NextResponse } from 'next/server'
 import { authService } from '@/modules/auth/service'
 import { registerSchema } from '@/modules/auth/schemas'
 import { AuthError } from '@/modules/auth/types'
-import { AUTH_COOKIE, COOKIE_OPTIONS } from '@/lib/auth'
+import { AUTH_COOKIE, COOKIE_OPTIONS, REFRESH_COOKIE, REFRESH_COOKIE_OPTIONS } from '@/lib/auth'
+import { rateLimit } from '@/lib/rate-limit'
+
+// 3 registros por IP a cada hora
+const LIMIT = 3
+const WINDOW_MS = 60 * 60 * 1000
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
+  const ip =
+    request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ??
+    request.headers.get('x-real-ip') ??
+    'unknown'
+
+  const { allowed, retryAfterMs } = rateLimit(`register:${ip}`, LIMIT, WINDOW_MS)
+
+  if (!allowed) {
+    return NextResponse.json(
+      { error: 'Muitas tentativas. Tente novamente mais tarde.' },
+      {
+        status: 429,
+        headers: { 'Retry-After': String(Math.ceil(retryAfterMs / 1000)) },
+      },
+    )
+  }
+
   let body: unknown
   try {
     body = await request.json()
@@ -21,14 +43,16 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   }
 
   try {
-    const { token, user } = await authService.register(parsed.data)
+    const { token, refreshToken, user } = await authService.register(parsed.data)
     const response = NextResponse.json({ user }, { status: 201 })
     response.cookies.set(AUTH_COOKIE, token, COOKIE_OPTIONS)
+    response.cookies.set(REFRESH_COOKIE, refreshToken, REFRESH_COOKIE_OPTIONS)
     return response
   } catch (err) {
     if (err instanceof AuthError) {
       return NextResponse.json({ error: err.message }, { status: err.statusCode })
     }
+    console.error('[register] Unexpected error:', err)
     return NextResponse.json({ error: 'Erro interno.' }, { status: 500 })
   }
 }

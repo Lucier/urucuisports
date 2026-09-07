@@ -2,9 +2,34 @@ import { NextRequest, NextResponse } from 'next/server'
 import { authService } from '@/modules/auth/service'
 import { loginSchema } from '@/modules/auth/schemas'
 import { AuthError } from '@/modules/auth/types'
-import { AUTH_COOKIE, COOKIE_OPTIONS } from '@/lib/auth'
+import { AUTH_COOKIE, COOKIE_OPTIONS, REFRESH_COOKIE, REFRESH_COOKIE_OPTIONS } from '@/lib/auth'
+import { rateLimit } from '@/lib/rate-limit'
+
+// 5 tentativas por IP a cada 15 minutos
+const LIMIT = 5
+const WINDOW_MS = 15 * 60 * 1000
 
 export async function POST(request: NextRequest): Promise<NextResponse> {
+  const ip =
+    request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ??
+    request.headers.get('x-real-ip') ??
+    'unknown'
+
+  const { allowed, remaining, retryAfterMs } = rateLimit(`login:${ip}`, LIMIT, WINDOW_MS)
+
+  if (!allowed) {
+    return NextResponse.json(
+      { error: 'Muitas tentativas. Tente novamente em alguns minutos.' },
+      {
+        status: 429,
+        headers: {
+          'Retry-After': String(Math.ceil(retryAfterMs / 1000)),
+          'X-RateLimit-Remaining': '0',
+        },
+      },
+    )
+  }
+
   let body: unknown
   try {
     body = await request.json()
@@ -21,14 +46,18 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   }
 
   try {
-    const { token, user } = await authService.login(parsed.data)
-    const response = NextResponse.json({ user })
+    const { token, refreshToken, user } = await authService.login(parsed.data)
+    const response = NextResponse.json({ user }, {
+      headers: { 'X-RateLimit-Remaining': String(remaining) },
+    })
     response.cookies.set(AUTH_COOKIE, token, COOKIE_OPTIONS)
+    response.cookies.set(REFRESH_COOKIE, refreshToken, REFRESH_COOKIE_OPTIONS)
     return response
   } catch (err) {
     if (err instanceof AuthError) {
       return NextResponse.json({ error: err.message }, { status: err.statusCode })
     }
+    console.error('[login] Unexpected error:', err)
     return NextResponse.json({ error: 'Erro interno.' }, { status: 500 })
   }
 }

@@ -20,17 +20,18 @@
   },
   "dependencies": {
     "@next/env": "^15.3.4",
+    "@sentry/nextjs": "^10.73.0",
     "bcryptjs": "^2.4.3",
     "clsx": "^2.1.1",
-    "jose": "^5.10.0",
-    "zod": "^3.25.67",
     "drizzle-orm": "^0.43.1",
+    "jose": "^5.10.0",
     "next": "^15.3.4",
     "pg": "^8.23.0",
     "postgres": "^3.4.5",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
-    "tailwind-merge": "^3.3.0"
+    "tailwind-merge": "^3.3.0",
+    "zod": "^3.25.67"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.1",

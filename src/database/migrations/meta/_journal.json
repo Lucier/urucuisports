@@ -50,6 +50,13 @@
       "when": 1788742055081,
       "tag": "0006_lumpy_risque",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1788744207316,
+      "tag": "0007_lazy_sprite",
+      "breakpoints": true
     }
   ]
 }
