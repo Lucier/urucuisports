@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic'
+
 import { NewsHighlights } from '@/components/home/NewsHighlights'
 
 export default function Home() {
