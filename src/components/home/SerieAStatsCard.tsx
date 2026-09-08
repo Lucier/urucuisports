@@ -1,37 +1,43 @@
 import Link from 'next/link'
-import { desc, eq } from 'drizzle-orm'
+import { asc, desc, eq, sql } from 'drizzle-orm'
 import { db } from '@/database/client'
 import { standings, teams, leagues } from '@/database/schema'
 import { cn } from '@/shared/utils'
 
 export async function SerieAStatsCard() {
-  // Busca a Série A
-  const [league] = await db
+  // Busca a primeira liga disponível (prioriza "urucuiense-serie-a" se existir)
+  const allLeagues = await db
     .select({ id: leagues.id, name: leagues.name, slug: leagues.slug })
     .from(leagues)
-    .where(eq(leagues.slug, 'urucuiense-serie-a'))
-    .limit(1)
+    .orderBy(asc(leagues.name))
+    .limit(5)
 
-  if (!league) return null
+  if (allLeagues.length === 0) return null
 
-  // Busca classificação com o grupo de cada time
+  const league =
+    allLeagues.find((l) => l.slug === 'urucuiense-serie-a') ?? allLeagues[0]
+
+  // Busca classificação com o grupo de cada time (leftJoin para incluir times sem partidas)
   const rows = await db
     .select({
-      id: standings.id,
-      points: standings.points,
-      played: standings.played,
-      won: standings.won,
-      drawn: standings.drawn,
-      lost: standings.lost,
-      goalsFor: standings.goalsFor,
-      goalsAgainst: standings.goalsAgainst,
+      teamId: teams.id,
+      points:       sql<number>`COALESCE(${standings.points}, 0)`,
+      played:       sql<number>`COALESCE(${standings.played}, 0)`,
+      won:          sql<number>`COALESCE(${standings.won}, 0)`,
+      drawn:        sql<number>`COALESCE(${standings.drawn}, 0)`,
+      lost:         sql<number>`COALESCE(${standings.lost}, 0)`,
+      goalsFor:     sql<number>`COALESCE(${standings.goalsFor}, 0)`,
+      goalsAgainst: sql<number>`COALESCE(${standings.goalsAgainst}, 0)`,
       teamName: teams.name,
       grupo: teams.grupo,
     })
-    .from(standings)
-    .innerJoin(teams, eq(standings.teamId, teams.id))
-    .where(eq(standings.leagueId, league.id))
-    .orderBy(desc(standings.points))
+    .from(teams)
+    .leftJoin(standings, eq(standings.teamId, teams.id))
+    .where(eq(teams.leagueId, league.id))
+    .orderBy(
+      desc(sql`COALESCE(${standings.points}, 0)`),
+      desc(sql`COALESCE(${standings.goalsFor}, 0) - COALESCE(${standings.goalsAgainst}, 0)`),
+    )
 
   if (rows.length === 0) return null
 
@@ -82,12 +88,12 @@ export async function SerieAStatsCard() {
 
           <div className="divide-y divide-slate-50">
             {group.rows.map((row, i) => {
-              const gd = (row.goalsFor ?? 0) - (row.goalsAgainst ?? 0)
+              const gd = row.goalsFor - row.goalsAgainst
               const isClassificado = i < 2
               const isRebaixamento = i === group.rows.length - 1
               return (
                 <div
-                  key={row.id}
+                  key={row.teamId}
                   className={cn(
                     'grid grid-cols-[1.25rem_1fr_2rem_2rem_1.75rem] items-center gap-x-2 px-4 py-2.5',
                     isClassificado && 'border-l-4 border-l-emerald-500',
