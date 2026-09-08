@@ -235,11 +235,12 @@ async function recalculateLeagueStats(leagueId: string) {
       scorerMap.get(key)!.goals += row.goals
     }
 
-    await db.delete(topScorers).where(eq(topScorers.leagueId, leagueId))
     const scorerValues = Array.from(scorerMap.values())
     if (scorerValues.length > 0) {
+      await db.delete(topScorers).where(eq(topScorers.leagueId, leagueId))
       await db.insert(topScorers).values(scorerValues)
     }
+    // Se não há matchGoals, preserva artilharia existente (pode ser entrada manual ou seed)
   } catch (err) {
     console.error('[recalculateLeagueStats] falha ao recalcular artilharia:', err)
   }
