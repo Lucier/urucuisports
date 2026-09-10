@@ -1116,6 +1116,14 @@ function KnockoutBracketForm({
   const [roundName, setRoundName] = useState('')
   const [matchups, setMatchups] = useState<{ home: string; away: string }[]>([{ home: '', away: '' }])
 
+  useEffect(() => {
+    if (state.success) {
+      setOpen(false)
+      setRoundName('')
+      setMatchups([{ home: '', away: '' }])
+    }
+  }, [state])
+
   const classified = computeClassified(allGroupRounds, teams)
 
   function addMatchup() {
