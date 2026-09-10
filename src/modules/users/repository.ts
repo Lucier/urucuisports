@@ -19,7 +19,17 @@ export const usersRepository = {
   },
 
   findById: async (id: string) => {
-    const [user] = await db.select().from(users).where(eq(users.id, id))
+    const [user] = await db
+      .select({
+        id: users.id,
+        name: users.name,
+        email: users.email,
+        role: users.role,
+        createdAt: users.createdAt,
+        updatedAt: users.updatedAt,
+      })
+      .from(users)
+      .where(eq(users.id, id))
     return user ?? null
   },
 
