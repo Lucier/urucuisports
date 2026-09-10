@@ -606,6 +606,12 @@ function AddMatchForm({
 
   const [homeId, setHomeId] = useState('')
 
+  useEffect(() => {
+    if (state.success) {
+      onCancel()
+    }
+  }, [state])
+
   return (
     <form action={formAction} className="mt-3 rounded-xl border border-emerald-100 bg-emerald-50/40 p-4 space-y-3">
       <p className="text-xs font-semibold uppercase tracking-wide text-emerald-700">Novo confronto</p>
