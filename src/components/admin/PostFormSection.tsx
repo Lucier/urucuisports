@@ -1,6 +1,6 @@
 'use client'
 
-import { useActionState, useState } from 'react'
+import { useActionState, useEffect, useState } from 'react'
 import { useFormStatus } from 'react-dom'
 import { upsertPostAction, deletePostAction, type PostFormState } from '@/app/admin/actions'
 
@@ -55,6 +55,15 @@ export function PostFormSection({ categories, initialPosts, adminId }: Props) {
   const [title, setTitle] = useState('')
   const [slug, setSlug] = useState('')
   const [slugManual, setSlugManual] = useState(false)
+
+  useEffect(() => {
+    if (state.success) {
+      setEditingPost(null)
+      setTitle('')
+      setSlug('')
+      setSlugManual(false)
+    }
+  }, [state])
 
   function startEdit(post: Post) {
     setEditingPost(post)
