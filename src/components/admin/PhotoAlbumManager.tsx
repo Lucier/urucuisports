@@ -1,6 +1,6 @@
 'use client'
 
-import { useActionState, useState } from 'react'
+import { useActionState, useEffect, useState } from 'react'
 import { useFormStatus } from 'react-dom'
 import Image from 'next/image'
 import { upsertAlbumAction, deleteAlbumAction, type AlbumFormState } from '@/app/admin/fotos/actions'
@@ -36,6 +36,12 @@ function SubmitButton({ editing }: { editing: boolean }) {
 export function PhotoAlbumManager({ albums, totalCount }: { albums: Album[]; totalCount: number }) {
   const [state, formAction, pending] = useActionState(upsertAlbumAction, initialState)
   const [editing, setEditing] = useState<Album | null>(null)
+
+  useEffect(() => {
+    if (state.success) {
+      setEditing(null)
+    }
+  }, [state])
 
   function startEdit(album: Album) {
     setEditing(album)

@@ -1,6 +1,6 @@
 'use client'
 
-import { useActionState, useState } from 'react'
+import { useActionState, useEffect, useState } from 'react'
 import { useFormStatus } from 'react-dom'
 import Image from 'next/image'
 import { upsertPlayerAction, deletePlayerAction, type PlayerFormState } from '@/app/admin/jogadores/actions'
@@ -68,6 +68,13 @@ export function PlayerManager({ players, teamId, totalCount }: { players: Player
   const [state, formAction] = useActionState(upsertPlayerAction, initialState)
   const [editing, setEditing] = useState<Player | null>(null)
   const [photoPreview, setPhotoPreview] = useState<string>('')
+
+  useEffect(() => {
+    if (state.success) {
+      setEditing(null)
+      setPhotoPreview('')
+    }
+  }, [state])
 
   function startEdit(player: Player) {
     setEditing(player)

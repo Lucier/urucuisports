@@ -1,6 +1,6 @@
 'use client'
 
-import { useActionState, useState } from 'react'
+import { useActionState, useEffect, useState } from 'react'
 import { useFormStatus } from 'react-dom'
 import Image from 'next/image'
 import { upsertTeamAction, deleteTeamAction, type TeamFormState } from '@/app/admin/times/actions'
@@ -53,6 +53,13 @@ export function TeamManager({ teams, totalCount }: { teams: Team[]; totalCount: 
   const [state, formAction] = useActionState(upsertTeamAction, initialState)
   const [editing, setEditing] = useState<Team | null>(null)
   const [logoPreview, setLogoPreview] = useState<string>('')
+
+  useEffect(() => {
+    if (state.success) {
+      setEditing(null)
+      setLogoPreview('')
+    }
+  }, [state])
 
   function startEdit(team: Team) {
     setEditing(team)

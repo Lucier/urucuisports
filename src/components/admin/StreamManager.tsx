@@ -1,6 +1,6 @@
 'use client'
 
-import { useActionState, useState } from 'react'
+import { useActionState, useEffect, useState } from 'react'
 import { useFormStatus } from 'react-dom'
 import {
   upsertStreamAction,
@@ -55,6 +55,12 @@ function SubmitButton({ editing }: { editing: boolean }) {
 export function StreamManager({ streams, totalCount }: { streams: Stream[]; totalCount: number }) {
   const [state, formAction] = useActionState(upsertStreamAction, initialState)
   const [editing, setEditing] = useState<Stream | null>(null)
+
+  useEffect(() => {
+    if (state.success) {
+      setEditing(null)
+    }
+  }, [state])
 
   function startEdit(stream: Stream) {
     setEditing(stream)

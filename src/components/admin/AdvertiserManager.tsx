@@ -1,6 +1,6 @@
 'use client'
 
-import { useActionState, useState } from 'react'
+import { useActionState, useEffect, useState } from 'react'
 import { useFormStatus } from 'react-dom'
 import Image from 'next/image'
 import {
@@ -65,6 +65,13 @@ export function AdvertiserManager({
   const [state, formAction] = useActionState(upsertAdvertiserAction, initialState)
   const [editing, setEditing] = useState<Advertiser | null>(null)
   const [logoPreview, setLogoPreview] = useState<string>('')
+
+  useEffect(() => {
+    if (state.success) {
+      setEditing(null)
+      setLogoPreview('')
+    }
+  }, [state])
 
   function startEdit(advertiser: Advertiser) {
     setEditing(advertiser)
