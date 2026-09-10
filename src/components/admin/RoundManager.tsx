@@ -1,6 +1,6 @@
 'use client'
 
-import { useActionState, useState } from 'react'
+import { useActionState, useEffect, useState } from 'react'
 import { useFormStatus } from 'react-dom'
 import {
   createRoundAction,
@@ -258,6 +258,12 @@ function MatchScoreModal({
   const [scorers, setScorers] = useState<ScorerEntry[]>(
     match.goals.map((g) => ({ playerId: g.playerId, teamId: g.teamId, goals: g.goals })),
   )
+
+  useEffect(() => {
+    if (state.success) {
+      onClose()
+    }
+  }, [state])
 
   const homePlayers = players.filter((p) => p.teamId === match.homeTeamId)
   const awayPlayers = players.filter((p) => p.teamId === match.awayTeamId)
