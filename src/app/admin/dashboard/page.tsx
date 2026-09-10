@@ -290,7 +290,6 @@ export default async function DashboardPage({
     }
 
     leagueStandings = [...map.values()]
-      .filter((s) => s.played > 0)
       .sort((a, b) => {
         if (b.points !== a.points) return b.points - a.points
         const sgA = a.goals_for - a.goals_against
