@@ -14,9 +14,9 @@ const sections = [
 ]
 
 const leagueLinks = [
-  { label: 'Uruçuiense Série A', href: '/estatisticas/seria-a' },
-  { label: 'Uruçuiense Série B', href: '/estatisticas/serie-b' },
-  { label: 'Veteranos', href: '/estatisticas/veteranos' },
+  { label: 'Uruçuiense Série A', href: '/estatisticas/campeonato-urucuiense-serie-a' },
+  { label: 'Uruçuiense Série B', href: '/estatisticas/campeonato-urucuiense-serie-b' },
+  { label: 'Veteranos', href: '/estatisticas/campeonato-urucuiense-veteranos' },
 ]
 
 export function Footer() {
@@ -36,14 +36,14 @@ export function Footer() {
               </span>
             </div>
             <p className="text-sm leading-relaxed text-gray-500">
-              Seu portal completo de notícias, resultados e classificações do futebol e demais esportes
-              uruçuiense.
+              Seu portal completo de notícias, resultados e classificações do futebol e demais
+              esportes uruçuiense.
             </p>
           </div>
 
           {sections.map((section) => (
             <div key={section.title}>
-              <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-white">
+              <h3 className="mb-4 text-sm font-semibold tracking-wider text-white uppercase">
                 {section.title}
               </h3>
               <ul className="space-y-2">
@@ -62,13 +62,16 @@ export function Footer() {
           ))}
 
           <div>
-            <h3 className="mb-4 text-sm font-semibold uppercase tracking-wider text-white">
+            <h3 className="mb-4 text-sm font-semibold tracking-wider text-white uppercase">
               Ligas
             </h3>
             <ul className="space-y-2">
               {leagueLinks.map((link) => (
                 <li key={link.href}>
-                  <Link href={link.href} className="text-sm transition-colors hover:text-emerald-400">
+                  <Link
+                    href={link.href}
+                    className="text-sm transition-colors hover:text-emerald-400"
+                  >
                     {link.label}
                   </Link>
                 </li>
