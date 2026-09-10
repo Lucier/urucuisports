@@ -79,6 +79,7 @@ type StandingRow = {
 }
 
 function StandingsTable({ rows }: { rows: StandingRow[] }) {
+  const total = rows.length
   return (
     <div className="overflow-x-auto">
       <table className="w-full min-w-[560px] text-sm">
@@ -99,9 +100,17 @@ function StandingsTable({ rows }: { rows: StandingRow[] }) {
         <tbody className="divide-y divide-slate-50">
           {rows.map((row, i) => {
             const sg = row.goals_for - row.goals_against
+            const isClassificado = i < 2
+            const isRebaixamento = i === total - 1
             return (
-              <tr key={row.id} className="transition-colors hover:bg-slate-50">
-                <td className="px-4 py-3 text-sm font-bold text-slate-400">{i + 1}</td>
+              <tr
+                key={row.id}
+                className={[
+                  'border-l-4 transition-colors hover:bg-slate-50',
+                  isClassificado ? 'border-l-emerald-500' : isRebaixamento ? 'border-l-red-400' : 'border-l-transparent',
+                ].join(' ')}
+              >
+                <td className={`px-4 py-3 text-sm font-bold ${isClassificado ? 'text-emerald-700' : isRebaixamento ? 'text-red-500' : 'text-slate-400'}`}>{i + 1}</td>
                 <td className="px-4 py-3 font-semibold text-slate-800">{row.team_name}</td>
                 <td className="px-4 py-3 text-center text-base font-extrabold text-slate-900">{row.points}</td>
                 <td className="px-3 py-3 text-center text-slate-600">{row.played}</td>
@@ -118,6 +127,16 @@ function StandingsTable({ rows }: { rows: StandingRow[] }) {
           })}
         </tbody>
       </table>
+      <div className="flex flex-wrap gap-x-6 gap-y-2 border-t border-slate-100 px-4 py-3 text-xs text-gray-400">
+        <span className="flex items-center gap-1.5">
+          <span className="h-3 w-3 rounded-sm bg-emerald-500" />
+          Classificação
+        </span>
+        <span className="flex items-center gap-1.5">
+          <span className="h-3 w-3 rounded-sm bg-red-400" />
+          Rebaixamento
+        </span>
+      </div>
     </div>
   )
 }
