@@ -837,6 +837,12 @@ function CreateRoundForm({
 }) {
   const [open, setOpen] = useState(false)
 
+  useEffect(() => {
+    if (state.success) {
+      setOpen(false)
+    }
+  }, [state])
+
   if (!open) {
     return (
       <button
