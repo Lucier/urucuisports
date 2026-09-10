@@ -36,3 +36,6 @@ next-env.d.ts
 # Database backups
 backups/
 .env*
+
+# Reports
+audit-seguranca-urucuisports.pdf
