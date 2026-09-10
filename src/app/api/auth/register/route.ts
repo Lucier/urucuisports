@@ -46,6 +46,11 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     return NextResponse.json({ error: 'JSON inválido.' }, { status: 400 })
   }
 
+  // Honeypot: bots filling extra fields are silently rejected
+  if (body && typeof body === 'object' && 'website' in body && (body as Record<string, unknown>).website) {
+    return NextResponse.json({ user: null }, { status: 201 })
+  }
+
   const parsed = registerSchema.safeParse(body)
   if (!parsed.success) {
     return NextResponse.json(

@@ -5,6 +5,8 @@ import { hash } from 'bcryptjs'
 import { db } from '@/database/client'
 import { users } from '@/database/schema'
 import { eq } from 'drizzle-orm'
+import { requireRole } from '@/lib/auth'
+import { UserRole } from '@/shared/types/auth'
 
 export type UserFormState = { error?: string; success?: string }
 
@@ -12,6 +14,12 @@ export async function upsertUserAction(
   _prev: UserFormState,
   formData: FormData,
 ): Promise<UserFormState> {
+  try {
+    await requireRole(UserRole.ADMIN)
+  } catch {
+    return { error: 'Acesso negado.' }
+  }
+
   const id       = formData.get('id') as string | null
   const name     = (formData.get('name') as string).trim()
   const email    = (formData.get('email') as string).trim().toLowerCase()
@@ -43,14 +51,18 @@ export async function upsertUserAction(
   }
 }
 
-export async function deleteUserAction(_prev: UserFormState, formData: FormData): Promise<UserFormState> {
+export async function deleteUserAction(formData: FormData): Promise<void> {
+  try {
+    await requireRole(UserRole.ADMIN)
+  } catch {
+    return
+  }
   const id = formData.get('id') as string
-  if (!id) return { error: 'ID inválido.' }
+  if (!id) return
   try {
     await db.delete(users).where(eq(users.id, id))
     revalidatePath('/admin/usuarios')
-    return { success: 'Usuário removido.' }
   } catch {
-    return { error: 'Erro ao remover usuário.' }
+    // silent — page revalidation will reflect actual state
   }
 }

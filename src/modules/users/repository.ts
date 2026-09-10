@@ -5,7 +5,17 @@ import type { NewUser, UpdateUser } from './types'
 
 export const usersRepository = {
   findAll: async () => {
-    return db.select().from(users).orderBy(users.createdAt)
+    return db
+      .select({
+        id: users.id,
+        name: users.name,
+        email: users.email,
+        role: users.role,
+        createdAt: users.createdAt,
+        updatedAt: users.updatedAt,
+      })
+      .from(users)
+      .orderBy(users.createdAt)
   },
 
   findById: async (id: string) => {

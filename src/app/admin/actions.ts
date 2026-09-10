@@ -86,7 +86,7 @@ export async function upsertPostAction(
       await db
         .update(posts)
         .set({ title, slug, content, categoryId, imageUrl: imageUrl || null, relevancia })
-        .where(eq(posts.id, id))
+        .where(and(eq(posts.id, id), isNull(posts.deletedAt)))
     } else {
       await db.insert(posts).values({
         title,

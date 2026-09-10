@@ -24,7 +24,7 @@
     "@sentry/nextjs": "^10.73.0",
     "bcryptjs": "^2.4.3",
     "clsx": "^2.1.1",
-    "drizzle-orm": "^0.43.1",
+    "drizzle-orm": "^0.45.2",
     "jose": "^5.10.0",
     "next": "^15.3.4",
     "postgres": "^3.4.5",
@@ -48,12 +48,12 @@
     "eslint": "^9.29.0",
     "eslint-config-next": "^15.3.4",
     "jsdom": "^26.1.0",
-    "postcss": "^8.5.4",
+    "postcss": "^8.5.28",
     "prettier": "^3.5.3",
     "prettier-plugin-tailwindcss": "^0.6.12",
     "tailwindcss": "^4.1.10",
     "tsx": "^4.19.2",
     "typescript": "^5.8.3",
-    "vitest": "^3.2.3"
+    "vitest": "^5.0.0"
   }
 }
