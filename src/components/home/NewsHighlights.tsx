@@ -55,9 +55,13 @@ export async function NewsHighlights() {
         url: advertisers.url,
       })
       .from(advertisers)
-      .orderBy(asc(advertisers.createdAt))
-      .limit(AD_SLOTS),
+      .orderBy(asc(advertisers.createdAt)),
   ])
+
+  const mobileAdIndex =
+    advertiserRows.length > 0 ? Math.floor(Math.random() * advertiserRows.length) : -1
+  const mobileAd = mobileAdIndex >= 0 ? advertiserRows[mobileAdIndex] : null
+  const desktopAds = advertiserRows.slice(0, AD_SLOTS)
 
   const hasNews = carouselRows.length > 0 || localRows.length > 0
 
@@ -127,44 +131,77 @@ export async function NewsHighlights() {
             </div>
           </div>
 
-          {/* Anúncios */}
-          <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
-            {Array.from({ length: AD_SLOTS }).map((_, i) => {
-              const adv = advertiserRows[i]
-              if (!adv) {
-                return (
-                  <div
-                    key={i}
-                    className="flex h-40 items-center justify-center rounded-xl border-2 border-dashed border-slate-200 bg-slate-50"
-                  >
-                    <span className="text-sm font-medium text-slate-400">Anuncie aqui</span>
-                  </div>
-                )
-              }
-              return (
+          {/* Anúncios — mobile: 1 sorteado / desktop: grid de 3 */}
+          <div className="mt-6">
+            {/* Mobile: exibe apenas o anunciante sorteado */}
+            <div className="sm:hidden">
+              {mobileAd ? (
                 <a
-                  key={adv.id}
-                  href={adv.url}
+                  href={mobileAd.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex h-40 items-center justify-center rounded-xl border border-slate-200 bg-white shadow-sm transition hover:border-emerald-300 hover:shadow-md"
+                  className="flex h-40 w-full items-center justify-center rounded-xl border border-slate-200 bg-white shadow-sm transition hover:border-emerald-300 hover:shadow-md"
                 >
-                  {adv.logoUrl ? (
+                  {mobileAd.logoUrl ? (
                     <SafeImage
-                      src={adv.logoUrl}
-                      alt={adv.name}
+                      src={mobileAd.logoUrl}
+                      alt={mobileAd.name}
                       width={180}
                       height={96}
                       className="object-contain"
                     />
                   ) : (
                     <span className="px-4 text-center text-lg font-bold text-slate-700">
-                      {adv.name}
+                      {mobileAd.name}
                     </span>
                   )}
                 </a>
-              )
-            })}
+              ) : (
+                <div className="flex h-40 items-center justify-center rounded-xl border-2 border-dashed border-slate-200 bg-slate-50">
+                  <span className="text-sm font-medium text-slate-400">Anuncie aqui</span>
+                </div>
+              )}
+            </div>
+
+            {/* Desktop: grid de 3 slots */}
+            <div className="hidden gap-4 sm:grid sm:grid-cols-3">
+              {Array.from({ length: AD_SLOTS }).map((_, i) => {
+                const adv = desktopAds[i]
+                if (!adv) {
+                  return (
+                    <div
+                      key={i}
+                      className="flex h-40 items-center justify-center rounded-xl border-2 border-dashed border-slate-200 bg-slate-50"
+                    >
+                      <span className="text-sm font-medium text-slate-400">Anuncie aqui</span>
+                    </div>
+                  )
+                }
+                return (
+                  <a
+                    key={adv.id}
+                    href={adv.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex h-40 items-center justify-center rounded-xl border border-slate-200 bg-white shadow-sm transition hover:border-emerald-300 hover:shadow-md"
+                  >
+                    {adv.logoUrl ? (
+                      <SafeImage
+                        src={adv.logoUrl}
+                        alt={adv.name}
+                        width={180}
+                        height={96}
+                        className="object-contain"
+                      />
+                    ) : (
+                      <span className="px-4 text-center text-lg font-bold text-slate-700">
+                        {adv.name}
+                      </span>
+                    )}
+                  </a>
+                )
+              })}
+            </div>
           </div>
         </>
       )}
