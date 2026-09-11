@@ -346,6 +346,14 @@ export const advertisers = pgTable(
   (table) => [index('idx_advertisers_created').on(table.createdAt)],
 )
 
+// ─── Rate Limits ──────────────────────────────────────────────────────────────
+
+export const rateLimits = pgTable('rate_limits', {
+  key: varchar('key', { length: 255 }).primaryKey(),
+  count: integer('count').notNull().default(1),
+  resetAt: timestamp('reset_at', { withTimezone: true }).notNull(),
+})
+
 // ─── Photo Albums ─────────────────────────────────────────────────────────────
 
 export const photoAlbums = pgTable(

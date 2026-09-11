@@ -27,7 +27,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   const sizeError = checkBodySize(request)
   if (sizeError) return sizeError
 
-  const { allowed, remaining, retryAfterMs } = rateLimit(`login:${ip}`, LIMIT, WINDOW_MS)
+  const { allowed, remaining, retryAfterMs } = await rateLimit(`login:${ip}`, LIMIT, WINDOW_MS)
 
   if (!allowed) {
     return NextResponse.json(

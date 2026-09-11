@@ -1,37 +1,32 @@
-type RateLimitEntry = { count: number; resetAt: number }
+import { client } from '@/database/client'
 
-const store = new Map<string, RateLimitEntry>()
-
-// Cleanup entries older than 1 hour every 10 minutes to prevent memory leak
-if (typeof setInterval !== 'undefined') {
-  setInterval(
-    () => {
-      const now = Date.now()
-      for (const [key, entry] of store.entries()) {
-        if (now > entry.resetAt + 60_000) store.delete(key)
-      }
-    },
-    10 * 60 * 1000,
-  )
-}
-
-export function rateLimit(
+export async function rateLimit(
   identifier: string,
   limit: number,
   windowMs: number,
-): { allowed: boolean; remaining: number; retryAfterMs: number } {
-  const now = Date.now()
-  const entry = store.get(identifier)
+): Promise<{ allowed: boolean; remaining: number; retryAfterMs: number }> {
+  const rows = await client`
+    INSERT INTO rate_limits (key, count, reset_at)
+    VALUES (${identifier}, 1, NOW() + (${windowMs} * interval '1 millisecond'))
+    ON CONFLICT (key) DO UPDATE
+    SET
+      count = CASE
+        WHEN rate_limits.reset_at < NOW() THEN 1
+        ELSE rate_limits.count + 1
+      END,
+      reset_at = CASE
+        WHEN rate_limits.reset_at < NOW() THEN NOW() + (${windowMs} * interval '1 millisecond')
+        ELSE rate_limits.reset_at
+      END
+    RETURNING count, reset_at
+  `
 
-  if (!entry || now > entry.resetAt) {
-    store.set(identifier, { count: 1, resetAt: now + windowMs })
-    return { allowed: true, remaining: limit - 1, retryAfterMs: 0 }
+  const { count, reset_at } = rows[0] as { count: number; reset_at: Date }
+  const resetAtMs = new Date(reset_at).getTime()
+
+  if (count > limit) {
+    return { allowed: false, remaining: 0, retryAfterMs: resetAtMs - Date.now() }
   }
 
-  if (entry.count >= limit) {
-    return { allowed: false, remaining: 0, retryAfterMs: entry.resetAt - now }
-  }
-
-  entry.count++
-  return { allowed: true, remaining: limit - entry.count, retryAfterMs: 0 }
+  return { allowed: true, remaining: limit - count, retryAfterMs: 0 }
 }
