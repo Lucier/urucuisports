@@ -33,6 +33,7 @@ const postSchema = z.object({
   categoryId: z.string().uuid(),
   imageUrl: z.string().url().optional().or(z.literal('')),
   relevancia: z.coerce.number().int().min(0).max(5),
+  authorName: z.string().max(255).optional().or(z.literal('')),
 })
 
 const matchSchema = z.object({
@@ -69,6 +70,7 @@ export async function upsertPostAction(
     categoryId: formData.get('categoryId'),
     imageUrl: formData.get('imageUrl') || '',
     relevancia: formData.get('relevancia') ?? '1',
+    authorName: formData.get('authorName') || '',
   }
 
   const parsed = postSchema.safeParse(raw)
@@ -77,7 +79,7 @@ export async function upsertPostAction(
     return { error: msg }
   }
 
-  const { title, slug, content, categoryId, imageUrl, relevancia } = parsed.data
+  const { title, slug, content, categoryId, imageUrl, relevancia, authorName } = parsed.data
   const id = formData.get('id') as string | null
   const currentUser = await requireRole(UserRole.ADMIN)
 
@@ -85,7 +87,7 @@ export async function upsertPostAction(
     if (id) {
       await db
         .update(posts)
-        .set({ title, slug, content, categoryId, imageUrl: imageUrl || null, relevancia })
+        .set({ title, slug, content, categoryId, imageUrl: imageUrl || null, relevancia, authorName: authorName || null })
         .where(and(eq(posts.id, id), isNull(posts.deletedAt)))
     } else {
       await db.insert(posts).values({
@@ -96,6 +98,7 @@ export async function upsertPostAction(
         imageUrl: imageUrl || null,
         relevancia,
         authorId: currentUser.userId,
+        authorName: authorName || null,
       })
     }
   } catch (err: unknown) {
