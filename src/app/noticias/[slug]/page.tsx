@@ -3,7 +3,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { eq, isNull, and } from 'drizzle-orm'
 import { db } from '@/database/client'
-import { posts, categories, users } from '@/database/schema'
+import { posts, categories } from '@/database/schema'
 import { SafeImage } from '@/components/ui/SafeImage'
 import { formatDateTime } from '@/shared/utils'
 
@@ -66,11 +66,10 @@ export default async function NoticiaPage({ params }: PageProps) {
       createdAt: posts.createdAt,
       categoryName: categories.name,
       categorySlug: categories.slug,
-      authorName: users.name,
+      authorName: posts.authorName,
     })
     .from(posts)
     .leftJoin(categories, eq(posts.categoryId, categories.id))
-    .leftJoin(users, eq(posts.authorId, users.id))
     .where(and(eq(posts.slug, slug), isNull(posts.deletedAt)))
     .limit(1)
 

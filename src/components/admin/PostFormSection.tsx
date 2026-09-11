@@ -14,6 +14,7 @@ type Post = {
   imageUrl: string | null
   categoryId: string | null
   categoryName: string | null
+  authorName: string | null
   relevancia: number
   createdAt: Date
 }
@@ -124,6 +125,18 @@ export function PostFormSection({ categories, initialPosts, adminId }: Props) {
                 placeholder="flamengo-vence-classico"
               />
             </div>
+          </div>
+
+          <div>
+            <label className="mb-1 block text-sm font-medium text-slate-700">Autor</label>
+            <input
+              name="authorName"
+              type="text"
+              defaultValue={editingPost?.authorName ?? ''}
+              key={(editingPost?.id ?? 'new') + '-author'}
+              className={inputCls}
+              placeholder="Nome do autor da notícia"
+            />
           </div>
 
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">

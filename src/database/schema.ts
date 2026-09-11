@@ -135,6 +135,7 @@ export const posts = pgTable(
     imageUrl: text('image_url'),
     categoryId: uuid('category_id').references(() => categories.id),
     authorId: uuid('author_id').references(() => users.id),
+    authorName: varchar('author_name', { length: 255 }),
     relevancia: integer('relevancia').default(1).notNull(),
     createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
     deletedAt: timestamp('deleted_at', { withTimezone: true }),
