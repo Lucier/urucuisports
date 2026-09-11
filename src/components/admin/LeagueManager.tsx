@@ -263,6 +263,7 @@ export function LeagueManager({ leagues, totalCount }: { leagues: League[]; tota
           </h2>
 
           <div className="overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-sm">
+            <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead className="bg-slate-50 text-xs font-semibold uppercase tracking-wide text-slate-500">
                 <tr>
@@ -318,6 +319,7 @@ export function LeagueManager({ leagues, totalCount }: { leagues: League[]; tota
                 ))}
               </tbody>
             </table>
+            </div>
           </div>
         </div>
       )}

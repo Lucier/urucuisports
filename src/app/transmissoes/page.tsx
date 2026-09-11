@@ -32,7 +32,7 @@ export default async function TransmissoesPage() {
   return (
     <div className="mx-auto max-w-7xl px-4 py-10">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-slate-900">Transmissões</h1>
+        <h1 className="text-2xl font-bold text-slate-900 sm:text-3xl">Transmissões</h1>
         <p className="mt-1 text-gray-500">Assista às partidas ao vivo pelo YouTube</p>
       </div>
 

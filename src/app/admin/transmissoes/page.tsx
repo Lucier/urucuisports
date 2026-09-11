@@ -34,7 +34,7 @@ export default async function AdminTransmissoesPage({ searchParams }: Props) {
   return (
     <div className="py-8">
       <div className="mb-8">
-        <h1 className="text-3xl font-extrabold text-slate-900">Transmissões</h1>
+        <h1 className="text-xl font-extrabold text-slate-900 sm:text-3xl">Transmissões</h1>
         <p className="mt-1 text-sm text-slate-500">
           Gerencie links de transmissões ao vivo pelo YouTube
         </p>

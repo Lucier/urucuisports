@@ -83,7 +83,7 @@ export default async function AdminJogadoresPage({ searchParams }: Props) {
               )}
             </div>
             <div>
-              <h1 className="text-3xl font-extrabold text-slate-900">{team.name}</h1>
+              <h1 className="text-xl font-extrabold text-slate-900 sm:text-3xl">{team.name}</h1>
               <p className="mt-0.5 text-sm text-slate-500">Gerencie o elenco do time</p>
             </div>
           </div>
@@ -119,7 +119,7 @@ export default async function AdminJogadoresPage({ searchParams }: Props) {
   return (
     <div className="mx-auto max-w-3xl px-4 py-10">
       <div className="mb-8">
-        <h1 className="text-3xl font-extrabold text-slate-900">Jogadores</h1>
+        <h1 className="text-xl font-extrabold text-slate-900 sm:text-3xl">Jogadores</h1>
         <p className="mt-1 text-sm text-slate-500">Escolha um time para gerenciar seu elenco</p>
       </div>
 

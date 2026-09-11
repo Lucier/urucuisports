@@ -39,7 +39,7 @@ export default async function AdminTimesPage({ searchParams }: Props) {
   return (
     <div className="py-8">
       <div className="mb-8">
-        <h1 className="text-3xl font-extrabold text-slate-900">Times</h1>
+        <h1 className="text-xl font-extrabold text-slate-900 sm:text-3xl">Times</h1>
         <p className="mt-1 text-sm text-slate-500">Gerencie os times cadastrados no portal</p>
       </div>
       <TeamManager teams={rows} totalCount={total} />

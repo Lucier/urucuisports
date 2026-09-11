@@ -49,7 +49,7 @@ function StatCard({
   }
 
   const card = (
-    <div className={`flex items-center gap-4 rounded-2xl border bg-white p-5 shadow-sm transition ${href ? 'hover:shadow-md hover:-translate-y-0.5' : ''}`}>
+    <div className={`flex items-center gap-3 rounded-2xl border bg-white p-3 shadow-sm transition sm:gap-4 sm:p-5 ${href ? 'hover:shadow-md hover:-translate-y-0.5' : ''}`}>
       <div className={`flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl border ${colorMap[color]}`}>
         {icon}
       </div>

@@ -35,7 +35,7 @@ export default async function AdminFotosPage({ searchParams }: Props) {
   return (
     <div className="py-8">
       <div className="mb-8">
-        <h1 className="text-3xl font-extrabold text-slate-900">Álbuns de Fotos</h1>
+        <h1 className="text-xl font-extrabold text-slate-900 sm:text-3xl">Álbuns de Fotos</h1>
         <p className="mt-1 text-sm text-slate-500">
           Cadastre links de repositórios de fotos (Google Drive, Flickr, etc.)
         </p>

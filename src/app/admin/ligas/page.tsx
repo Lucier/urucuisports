@@ -77,7 +77,7 @@ export default async function AdminLigasPage({ searchParams }: Props) {
               )}
             </div>
             <div>
-              <h1 className="text-3xl font-extrabold text-slate-900">{league.name}</h1>
+              <h1 className="text-xl font-extrabold text-slate-900 sm:text-3xl">{league.name}</h1>
               <p className="mt-0.5 text-sm text-slate-500">Gerencie os times desta liga</p>
             </div>
           </div>
@@ -124,7 +124,7 @@ export default async function AdminLigasPage({ searchParams }: Props) {
   return (
     <div className="mx-auto max-w-3xl px-4 py-10">
       <div className="mb-8">
-        <h1 className="text-3xl font-extrabold text-slate-900">Ligas</h1>
+        <h1 className="text-xl font-extrabold text-slate-900 sm:text-3xl">Ligas</h1>
         <p className="mt-1 text-sm text-slate-500">
           Gerencie as competições e seus times participantes
         </p>

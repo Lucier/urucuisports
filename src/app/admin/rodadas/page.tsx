@@ -47,7 +47,7 @@ export default async function AdminRodadasPage({ searchParams }: Props) {
     return (
       <div className="mx-auto max-w-3xl px-4 py-10">
         <div className="mb-8">
-          <h1 className="text-3xl font-extrabold text-slate-900">Rodadas</h1>
+          <h1 className="text-xl font-extrabold text-slate-900 sm:text-3xl">Rodadas</h1>
           <p className="mt-1 text-sm text-slate-500">
             Selecione uma liga para gerenciar suas rodadas e confrontos
           </p>
@@ -240,7 +240,7 @@ export default async function AdminRodadasPage({ searchParams }: Props) {
             )}
           </div>
           <div>
-            <h1 className="text-3xl font-extrabold text-slate-900">{league.name}</h1>
+            <h1 className="text-xl font-extrabold text-slate-900 sm:text-3xl">{league.name}</h1>
             <p className="mt-0.5 text-sm text-slate-500">
               {league.tipo === 'grupos'
                 ? `Por grupos · ${league.numeroGrupos} grupo${(league.numeroGrupos ?? 0) > 1 ? 's' : ''}`

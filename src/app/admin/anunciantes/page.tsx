@@ -45,7 +45,7 @@ export default async function AdminAnunciantesPage({ searchParams }: Props) {
   return (
     <div className="py-8">
       <div className="mb-8">
-        <h1 className="text-3xl font-extrabold text-slate-900">Anunciantes</h1>
+        <h1 className="text-xl font-extrabold text-slate-900 sm:text-3xl">Anunciantes</h1>
         <p className="mt-1 text-sm text-slate-500">
           Gerencie os anunciantes e patrocinadores do portal
         </p>
