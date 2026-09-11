@@ -3,7 +3,7 @@ export const dynamic = 'force-dynamic'
 import type { Metadata } from 'next'
 import { desc, eq, isNull, and } from 'drizzle-orm'
 import { db } from '@/database/client'
-import { posts, categories, users } from '@/database/schema'
+import { posts, categories } from '@/database/schema'
 import { CategoryFilter } from '@/components/news/CategoryFilter'
 import { PostCard } from '@/components/news/PostCard'
 
@@ -28,7 +28,7 @@ export default async function NoticiasPage({ searchParams }: PageProps) {
     createdAt: posts.createdAt,
     categoryName: categories.name,
     categorySlug: categories.slug,
-    authorName: users.name,
+    authorName: posts.authorName,
   }
 
   const [allCategories, rows] = await Promise.all([
@@ -38,7 +38,6 @@ export default async function NoticiasPage({ searchParams }: PageProps) {
       .select(baseSelect)
       .from(posts)
       .leftJoin(categories, eq(posts.categoryId, categories.id))
-      .leftJoin(users, eq(posts.authorId, users.id))
       .where(
         categoria
           ? and(isNull(posts.deletedAt), eq(categories.slug, categoria))
