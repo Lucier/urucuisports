@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import { asc, desc, eq, gt, isNull, and } from 'drizzle-orm'
 import { db } from '@/database/client'
-import { posts, categories, users, advertisers } from '@/database/schema'
+import { posts, categories, advertisers } from '@/database/schema'
 import { NewsCarousel } from './NewsCarousel'
 import { SerieAStatsCard } from './SerieAStatsCard'
 import { MatchesCard } from './MatchesCard'
@@ -22,11 +22,10 @@ export async function NewsHighlights() {
         imageUrl: posts.imageUrl,
         createdAt: posts.createdAt,
         categoryName: categories.name,
-        authorName: users.name,
+        authorName: posts.authorName,
       })
       .from(posts)
       .leftJoin(categories, eq(posts.categoryId, categories.id))
-      .leftJoin(users, eq(posts.authorId, users.id))
       .where(and(gt(posts.relevancia, 0), isNull(posts.deletedAt)))
       .orderBy(asc(posts.relevancia), desc(posts.createdAt))
       .limit(5),
