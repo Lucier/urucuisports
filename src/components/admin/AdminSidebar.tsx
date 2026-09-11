@@ -207,7 +207,6 @@ export function AdminSidebar() {
         </div>
       )}
 
-      {/* Desktop sidebar */}
       <aside className="hidden w-52 flex-shrink-0 lg:block">
         <div className="sticky top-20 rounded-2xl border border-slate-100 bg-white p-3 shadow-sm">
           <p className="mb-2 px-3 text-[10px] font-semibold tracking-widest text-slate-400 uppercase">
@@ -241,34 +240,6 @@ export function AdminSidebar() {
           </div>
         </div>
       </aside>
-
-      {/* Mobile top bar */}
-      <div className="mb-4 lg:hidden">
-        <nav className="flex gap-1 overflow-x-auto rounded-xl border border-slate-100 bg-white p-1.5 shadow-sm">
-          {links.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className={`flex flex-shrink-0 items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium transition-colors ${
-                isActive(link.href, link.exact)
-                  ? 'bg-emerald-50 text-emerald-700'
-                  : 'text-slate-500 hover:bg-slate-50 hover:text-slate-800'
-              }`}
-            >
-              {link.icon}
-              {link.label}
-            </Link>
-          ))}
-          <button
-            type="button"
-            onClick={() => setShowConfirm(true)}
-            className="flex flex-shrink-0 items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium text-slate-500 transition-colors hover:bg-red-50 hover:text-red-600"
-          >
-            {logoutIcon}
-            Sair
-          </button>
-        </nav>
-      </div>
     </>
   )
 }
