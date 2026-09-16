@@ -39,7 +39,6 @@ export function PhotoAlbumManager({ albums, totalCount }: { albums: Album[]; tot
   const [state, formAction] = useActionState(upsertAlbumAction, initialState)
   const [editing, setEditing] = useState<Album | null>(null)
   const [formKey, setFormKey] = useState(0)
-  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null)
 
   useEffect(() => {
     if (state.success) {
@@ -50,7 +49,6 @@ export function PhotoAlbumManager({ albums, totalCount }: { albums: Album[]; tot
 
   function startEdit(album: Album) {
     setEditing(album)
-    setConfirmDeleteId(null)
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
@@ -187,7 +185,7 @@ export function PhotoAlbumManager({ albums, totalCount }: { albums: Album[]; tot
                   <th className="px-4 py-3 text-left">Álbum</th>
                   <th className="hidden px-4 py-3 text-left sm:table-cell">Link</th>
                   <th className="hidden px-4 py-3 text-left md:table-cell">Data</th>
-                  <th className="px-4 py-3" />
+                  <th className="px-4 py-3 text-right">Ações</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-50">
@@ -210,7 +208,7 @@ export function PhotoAlbumManager({ albums, totalCount }: { albums: Album[]; tot
                         <div className="min-w-0">
                           <p className="truncate font-medium text-slate-800">{album.title}</p>
                           {album.sportType && (
-                            <p className="truncate text-xs text-emerald-600 font-medium">
+                            <p className="truncate text-xs font-medium text-emerald-600">
                               {SPORT_TYPES.find((s) => s.value === album.sportType)?.label}
                             </p>
                           )}
@@ -225,7 +223,7 @@ export function PhotoAlbumManager({ albums, totalCount }: { albums: Album[]; tot
                         href={album.url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1 truncate text-xs text-emerald-600 hover:underline"
+                        className="inline-flex items-center gap-1 text-xs text-emerald-600 hover:underline"
                         style={{ maxWidth: 220 }}
                       >
                         <svg className="h-3 w-3 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -238,45 +236,26 @@ export function PhotoAlbumManager({ albums, totalCount }: { albums: Album[]; tot
                     <td className="hidden px-4 py-3 text-xs text-gray-400 md:table-cell">
                       {formatDate(album.createdAt)}
                     </td>
-                    <td className="px-4 py-3">
-                      {confirmDeleteId === album.id ? (
-                        <div className="flex items-center justify-end gap-2">
-                          <span className="text-xs text-slate-500">Excluir álbum?</span>
-                          <form action={deleteAlbumAction}>
-                            <input type="hidden" name="id" value={album.id} />
-                            <button
-                              type="submit"
-                              className="rounded px-3 py-1 text-xs font-semibold text-white bg-red-600 hover:bg-red-700 transition"
-                            >
-                              Confirmar
-                            </button>
-                          </form>
-                          <button
-                            type="button"
-                            onClick={() => setConfirmDeleteId(null)}
-                            className="rounded px-3 py-1 text-xs font-medium text-slate-600 border border-slate-200 hover:bg-slate-50 transition"
-                          >
-                            Cancelar
-                          </button>
-                        </div>
-                      ) : (
-                        <div className="flex items-center justify-end gap-2">
-                          <button
-                            type="button"
-                            onClick={() => startEdit(album)}
-                            className="rounded px-3 py-1 text-xs font-medium text-emerald-700 hover:bg-emerald-50"
-                          >
-                            Editar
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => setConfirmDeleteId(album.id)}
-                            className="rounded px-3 py-1 text-xs font-medium text-red-600 hover:bg-red-50"
-                          >
-                            Excluir
-                          </button>
-                        </div>
-                      )}
+                    <td className="whitespace-nowrap px-4 py-3 text-right">
+                      <button
+                        type="button"
+                        onClick={() => startEdit(album)}
+                        className="rounded px-3 py-1 text-xs font-medium text-emerald-700 hover:bg-emerald-50"
+                      >
+                        Editar
+                      </button>
+                      <form action={deleteAlbumAction} className="inline">
+                        <input type="hidden" name="id" value={album.id} />
+                        <button
+                          type="submit"
+                          className="rounded px-3 py-1 text-xs font-medium text-red-600 hover:bg-red-50"
+                          onClick={(e) => {
+                            if (!confirm(`Excluir "${album.title}"?`)) e.preventDefault()
+                          }}
+                        >
+                          Excluir
+                        </button>
+                      </form>
                     </td>
                   </tr>
                 ))}
