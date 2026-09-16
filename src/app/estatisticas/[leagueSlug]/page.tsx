@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation'
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import Image from 'next/image'
 import { desc, eq, and, isNull, sql } from 'drizzle-orm'
 import { alias } from 'drizzle-orm/pg-core'
 import { db } from '@/database/client'
@@ -153,7 +154,17 @@ export default async function LeaguePage({ params, searchParams }: PageProps) {
       {/* Hero da liga */}
       <div className="mb-6 overflow-hidden rounded-2xl bg-gradient-to-br from-emerald-800 to-slate-900">
         <div className="flex items-center gap-4 px-4 py-5 sm:gap-5 sm:px-8 sm:py-7">
-          <span className="text-4xl drop-shadow sm:text-5xl" aria-hidden>{flag}</span>
+          {league.logoUrl ? (
+            <Image
+              src={league.logoUrl}
+              alt={`Logo ${league.name}`}
+              width={72}
+              height={72}
+              className="h-16 w-16 flex-shrink-0 object-contain drop-shadow sm:h-20 sm:w-20"
+            />
+          ) : (
+            <span className="text-4xl drop-shadow sm:text-5xl" aria-hidden>{flag}</span>
+          )}
           <div className="min-w-0 flex-1">
             <h1 className="text-xl font-extrabold text-white sm:text-2xl lg:text-3xl">{league.name}</h1>
             {league.country && (
