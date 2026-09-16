@@ -1,18 +1,9 @@
-import { resolve4 } from 'dns/promises'
 import postgres from 'postgres'
 
-async function main() {
-  const dbUrl = new URL(process.env.DATABASE_URL!)
-  const [ipv4] = await resolve4(dbUrl.hostname)
+const NETWORK_ERRORS = new Set(['ENETUNREACH', 'ECONNREFUSED', 'ENOTFOUND', 'ENODATA', 'ETIMEDOUT'])
 
-  const sql = postgres({
-    host: ipv4,
-    port: Number(dbUrl.port) || 5432,
-    database: dbUrl.pathname.slice(1),
-    username: decodeURIComponent(dbUrl.username),
-    password: decodeURIComponent(dbUrl.password),
-    ssl: 'require',
-  })
+async function main() {
+  const sql = postgres(process.env.DATABASE_URL!)
 
   await sql`ALTER TABLE posts ADD COLUMN IF NOT EXISTS author_name varchar(255)`
   await sql`ALTER TABLE photo_albums ADD COLUMN IF NOT EXISTS sport_type varchar(50)`
@@ -21,6 +12,11 @@ async function main() {
 }
 
 main().catch((err) => {
+  if (NETWORK_ERRORS.has(err.code)) {
+    console.warn(`Schema migration skipped (${err.code}): DB unreachable from build environment.`)
+    console.warn('Use the Supabase connection pooler URL (port 6543) to run migrations during build.')
+    process.exit(0)
+  }
   console.error('Schema ensure failed:', err)
   process.exit(1)
 })
