@@ -9,6 +9,7 @@ import {
   integer,
 } from 'drizzle-orm/pg-core'
 import { relations } from 'drizzle-orm'
+import { type SportType } from '@/shared/constants'
 
 // ─── Enums ────────────────────────────────────────────────────────────────────
 
@@ -356,8 +357,6 @@ export const rateLimits = pgTable('rate_limits', {
 })
 
 // ─── Photo Albums ─────────────────────────────────────────────────────────────
-
-import { type SportType } from '@/shared/constants'
 
 export const photoAlbums = pgTable(
   'photo_albums',
