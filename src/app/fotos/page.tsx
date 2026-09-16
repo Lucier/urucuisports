@@ -3,7 +3,7 @@ export const dynamic = 'force-dynamic'
 import type { Metadata } from 'next'
 import { desc } from 'drizzle-orm'
 import { db } from '@/database/client'
-import { photoAlbums } from '@/database/schema'
+import { photoAlbums, SPORT_TYPES } from '@/database/schema'
 import { SafeImage } from '@/components/ui/SafeImage'
 import { formatDate } from '@/shared/utils'
 
@@ -66,6 +66,13 @@ export default async function FotosPage() {
                     alt={album.title}
                     className="absolute inset-0 h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
                   />
+                )}
+
+                {/* Badge tipo de esporte */}
+                {album.sportType && (
+                  <span className="absolute left-3 top-3 rounded-full bg-black/50 px-2.5 py-1 text-xs font-semibold text-white backdrop-blur-sm">
+                    {SPORT_TYPES.find((s) => s.value === album.sportType)?.label}
+                  </span>
                 )}
 
                 {/* Badge "Abrir galeria" */}
