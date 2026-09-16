@@ -34,17 +34,21 @@ function SubmitButton({ editing }: { editing: boolean }) {
 }
 
 export function PhotoAlbumManager({ albums, totalCount }: { albums: Album[]; totalCount: number }) {
-  const [state, formAction, pending] = useActionState(upsertAlbumAction, initialState)
+  const [state, formAction] = useActionState(upsertAlbumAction, initialState)
   const [editing, setEditing] = useState<Album | null>(null)
+  const [formKey, setFormKey] = useState(0)
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null)
 
   useEffect(() => {
     if (state.success) {
       setEditing(null)
+      setFormKey((k) => k + 1)
     }
   }, [state])
 
   function startEdit(album: Album) {
     setEditing(album)
+    setConfirmDeleteId(null)
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
@@ -71,7 +75,7 @@ export function PhotoAlbumManager({ albums, totalCount }: { albums: Album[]; tot
               name="title"
               required
               defaultValue={editing?.title ?? ''}
-              key={editing?.id ?? 'new-title'}
+              key={editing ? `edit-title-${editing.id}` : `new-title-${formKey}`}
               className={inputCls}
               placeholder="Ex: Brasileirão 2026 — Rodada 12"
             />
@@ -89,7 +93,7 @@ export function PhotoAlbumManager({ albums, totalCount }: { albums: Album[]; tot
               type="url"
               required
               defaultValue={editing?.url ?? ''}
-              key={editing?.id ?? 'new-url'}
+              key={editing ? `edit-url-${editing.id}` : `new-url-${formKey}`}
               className={inputCls}
               placeholder="https://drive.google.com/drive/folders/..."
             />
@@ -101,7 +105,7 @@ export function PhotoAlbumManager({ albums, totalCount }: { albums: Album[]; tot
               name="description"
               rows={2}
               defaultValue={editing?.description ?? ''}
-              key={editing?.id ?? 'new-desc'}
+              key={editing ? `edit-desc-${editing.id}` : `new-desc-${formKey}`}
               className={`${inputCls} resize-none`}
               placeholder="Descrição opcional..."
             />
@@ -116,7 +120,7 @@ export function PhotoAlbumManager({ albums, totalCount }: { albums: Album[]; tot
               name="coverUrl"
               type="url"
               defaultValue={editing?.coverUrl ?? ''}
-              key={editing?.id ?? 'new-cover'}
+              key={editing ? `edit-cover-${editing.id}` : `new-cover-${formKey}`}
               className={inputCls}
               placeholder="https://..."
             />
@@ -210,27 +214,44 @@ export function PhotoAlbumManager({ albums, totalCount }: { albums: Album[]; tot
                       {formatDate(album.createdAt)}
                     </td>
                     <td className="px-4 py-3">
-                      <div className="flex items-center justify-end gap-2">
-                        <button
-                          type="button"
-                          onClick={() => startEdit(album)}
-                          className="rounded px-3 py-1 text-xs font-medium text-emerald-700 hover:bg-emerald-50"
-                        >
-                          Editar
-                        </button>
-                        <form action={deleteAlbumAction}>
-                          <input type="hidden" name="id" value={album.id} />
+                      {confirmDeleteId === album.id ? (
+                        <div className="flex items-center justify-end gap-2">
+                          <span className="text-xs text-slate-500">Excluir álbum?</span>
+                          <form action={deleteAlbumAction}>
+                            <input type="hidden" name="id" value={album.id} />
+                            <button
+                              type="submit"
+                              className="rounded px-3 py-1 text-xs font-semibold text-white bg-red-600 hover:bg-red-700 transition"
+                            >
+                              Confirmar
+                            </button>
+                          </form>
                           <button
-                            type="submit"
+                            type="button"
+                            onClick={() => setConfirmDeleteId(null)}
+                            className="rounded px-3 py-1 text-xs font-medium text-slate-600 border border-slate-200 hover:bg-slate-50 transition"
+                          >
+                            Cancelar
+                          </button>
+                        </div>
+                      ) : (
+                        <div className="flex items-center justify-end gap-2">
+                          <button
+                            type="button"
+                            onClick={() => startEdit(album)}
+                            className="rounded px-3 py-1 text-xs font-medium text-emerald-700 hover:bg-emerald-50"
+                          >
+                            Editar
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setConfirmDeleteId(album.id)}
                             className="rounded px-3 py-1 text-xs font-medium text-red-600 hover:bg-red-50"
-                            onClick={(e) => {
-                              if (!confirm('Excluir este álbum?')) e.preventDefault()
-                            }}
                           >
                             Excluir
                           </button>
-                        </form>
-                      </div>
+                        </div>
+                      )}
                     </td>
                   </tr>
                 ))}
