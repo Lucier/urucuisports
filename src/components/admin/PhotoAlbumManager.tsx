@@ -4,7 +4,7 @@ import { useActionState, useEffect, useState } from 'react'
 import { useFormStatus } from 'react-dom'
 import Image from 'next/image'
 import { upsertAlbumAction, deleteAlbumAction, type AlbumFormState } from '@/app/admin/fotos/actions'
-import { SPORT_TYPES, type SportType } from '@/database/schema'
+import { SPORT_TYPES, type SportType } from '@/shared/constants'
 import { formatDate } from '@/shared/utils'
 
 type Album = {
