@@ -4,6 +4,7 @@ import { useActionState, useEffect, useState } from 'react'
 import { useFormStatus } from 'react-dom'
 import Image from 'next/image'
 import { upsertAlbumAction, deleteAlbumAction, type AlbumFormState } from '@/app/admin/fotos/actions'
+import { SPORT_TYPES, type SportType } from '@/database/schema'
 import { formatDate } from '@/shared/utils'
 
 type Album = {
@@ -12,6 +13,7 @@ type Album = {
   description: string | null
   url: string
   coverUrl: string | null
+  sportType: SportType | null
   createdAt: Date
 }
 
@@ -113,6 +115,24 @@ export function PhotoAlbumManager({ albums, totalCount }: { albums: Album[]; tot
 
           <div>
             <label className="mb-1 block text-sm font-medium text-slate-700">
+              Tipo de esporte
+              <span className="ml-1 text-xs font-normal text-gray-400">(opcional)</span>
+            </label>
+            <select
+              name="sportType"
+              defaultValue={editing?.sportType ?? ''}
+              key={editing ? `edit-sport-${editing.id}` : `new-sport-${formKey}`}
+              className={inputCls}
+            >
+              <option value="">Selecione o esporte...</option>
+              {SPORT_TYPES.map((s) => (
+                <option key={s.value} value={s.value}>{s.label}</option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <label className="mb-1 block text-sm font-medium text-slate-700">
               URL da imagem de capa
               <span className="ml-1 text-xs font-normal text-gray-400">(opcional)</span>
             </label>
@@ -189,6 +209,11 @@ export function PhotoAlbumManager({ albums, totalCount }: { albums: Album[]; tot
                         </div>
                         <div className="min-w-0">
                           <p className="truncate font-medium text-slate-800">{album.title}</p>
+                          {album.sportType && (
+                            <p className="truncate text-xs text-emerald-600 font-medium">
+                              {SPORT_TYPES.find((s) => s.value === album.sportType)?.label}
+                            </p>
+                          )}
                           {album.description && (
                             <p className="truncate text-xs text-gray-400">{album.description}</p>
                           )}

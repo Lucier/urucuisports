@@ -4,17 +4,20 @@ import { revalidatePath } from 'next/cache'
 import { eq } from 'drizzle-orm'
 import { z } from 'zod'
 import { db } from '@/database/client'
-import { photoAlbums } from '@/database/schema'
+import { photoAlbums, SPORT_TYPES, type SportType } from '@/database/schema'
 import { requireRole } from '@/lib/auth'
 import { UserRole } from '@/shared/types/auth'
 
 export type AlbumFormState = { error?: string; success?: string }
+
+const sportTypeValues = SPORT_TYPES.map((s) => s.value) as [SportType, ...SportType[]]
 
 const albumSchema = z.object({
   title: z.string().min(2).max(255),
   url: z.string().url('URL inválida. Inclua https://'),
   description: z.string().max(500).optional(),
   coverUrl: z.string().url().optional().or(z.literal('')),
+  sportType: z.enum(sportTypeValues).optional(),
 })
 
 function revalidate() {
@@ -37,20 +40,21 @@ export async function upsertAlbumAction(
     url: formData.get('url'),
     description: formData.get('description') || undefined,
     coverUrl: formData.get('coverUrl') || '',
+    sportType: formData.get('sportType') || undefined,
   })
 
   if (!parsed.success) {
     return { error: parsed.error.errors.map((e) => e.message).join(', ') }
   }
 
-  const { title, url, description, coverUrl } = parsed.data
+  const { title, url, description, coverUrl, sportType } = parsed.data
   const id = formData.get('id') as string | null
 
   try {
     if (id) {
       await db
         .update(photoAlbums)
-        .set({ title, url, description: description ?? null, coverUrl: coverUrl || null })
+        .set({ title, url, description: description ?? null, coverUrl: coverUrl || null, sportType: sportType ?? null })
         .where(eq(photoAlbums.id, id))
     } else {
       await db.insert(photoAlbums).values({
@@ -58,6 +62,7 @@ export async function upsertAlbumAction(
         url,
         description: description ?? null,
         coverUrl: coverUrl || null,
+        sportType: sportType ?? null,
       })
     }
   } catch {
