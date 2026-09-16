@@ -357,18 +357,7 @@ export const rateLimits = pgTable('rate_limits', {
 
 // ─── Photo Albums ─────────────────────────────────────────────────────────────
 
-export const SPORT_TYPES = [
-  { value: 'futebol', label: 'Futebol' },
-  { value: 'atletismo', label: 'Atletismo' },
-  { value: 'volei', label: 'Vôlei' },
-  { value: 'jiu_jitsu', label: 'Jiu-jitsu' },
-  { value: 'ciclismo', label: 'Ciclismo' },
-  { value: 'beach_tenis', label: 'Beach tênis' },
-  { value: 'capoeira', label: 'Capoeira' },
-  { value: 'futsal', label: 'Futsal' },
-] as const
-
-export type SportType = (typeof SPORT_TYPES)[number]['value']
+import { type SportType } from '@/shared/constants'
 
 export const photoAlbums = pgTable(
   'photo_albums',
