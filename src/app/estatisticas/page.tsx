@@ -2,6 +2,7 @@ export const dynamic = 'force-dynamic'
 
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import Image from 'next/image'
 import { count, eq } from 'drizzle-orm'
 import { db } from '@/database/client'
 import { leagues, teams, matches } from '@/database/schema'
@@ -23,6 +24,7 @@ export default async function EstatisticasPage() {
       name: leagues.name,
       slug: leagues.slug,
       country: leagues.country,
+      logoUrl: leagues.logoUrl,
       teamCount: count(teams.id),
     })
     .from(leagues)
@@ -51,9 +53,19 @@ export default async function EstatisticasPage() {
             >
               {/* Banner */}
               <div className="flex h-32 items-center justify-center bg-gradient-to-br from-emerald-800 to-slate-900">
-                <span className="text-6xl drop-shadow-lg" aria-hidden>
-                  {flag}
-                </span>
+                {league.logoUrl ? (
+                  <Image
+                    src={league.logoUrl}
+                    alt={`Logo ${league.name}`}
+                    width={80}
+                    height={80}
+                    className="h-20 w-20 object-contain drop-shadow-lg"
+                  />
+                ) : (
+                  <span className="text-6xl drop-shadow-lg" aria-hidden>
+                    {flag}
+                  </span>
+                )}
               </div>
 
               {/* Info */}
