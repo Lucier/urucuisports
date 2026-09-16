@@ -357,6 +357,19 @@ export const rateLimits = pgTable('rate_limits', {
 
 // ─── Photo Albums ─────────────────────────────────────────────────────────────
 
+export const SPORT_TYPES = [
+  { value: 'futebol', label: 'Futebol' },
+  { value: 'atletismo', label: 'Atletismo' },
+  { value: 'volei', label: 'Vôlei' },
+  { value: 'jiu_jitsu', label: 'Jiu-jitsu' },
+  { value: 'ciclismo', label: 'Ciclismo' },
+  { value: 'beach_tenis', label: 'Beach tênis' },
+  { value: 'capoeira', label: 'Capoeira' },
+  { value: 'futsal', label: 'Futsal' },
+] as const
+
+export type SportType = (typeof SPORT_TYPES)[number]['value']
+
 export const photoAlbums = pgTable(
   'photo_albums',
   {
@@ -365,6 +378,7 @@ export const photoAlbums = pgTable(
     description: text('description'),
     url: text('url').notNull(),
     coverUrl: text('cover_url'),
+    sportType: varchar('sport_type', { length: 50 }).$type<SportType>(),
     createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
   },
   (table) => [index('idx_albums_created').on(table.createdAt)],
