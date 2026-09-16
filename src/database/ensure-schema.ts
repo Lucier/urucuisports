@@ -1,4 +1,7 @@
+import { setDefaultResultOrder } from 'dns'
 import postgres from 'postgres'
+
+setDefaultResultOrder('ipv4first')
 
 const sql = postgres(process.env.DATABASE_URL!)
 
