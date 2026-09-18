@@ -139,7 +139,7 @@ export async function NewsHighlights() {
                   href={mobileAd.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex h-40 w-full items-center justify-center rounded-xl border border-slate-200 bg-white shadow-sm transition hover:border-emerald-300 hover:shadow-md"
+                  className="flex h-40 w-full items-center justify-center overflow-hidden rounded-xl border border-slate-200 px-4 shadow-sm transition hover:border-emerald-300 hover:shadow-md"
                 >
                   {mobileAd.logoUrl ? (
                     <SafeImage
@@ -147,7 +147,7 @@ export async function NewsHighlights() {
                       alt={mobileAd.name}
                       width={180}
                       height={96}
-                      className="object-contain"
+                      className="max-h-full max-w-full object-contain"
                     />
                   ) : (
                     <span className="px-4 text-center text-lg font-bold text-slate-700">
@@ -182,7 +182,7 @@ export async function NewsHighlights() {
                     href={adv.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex h-40 items-center justify-center rounded-xl border border-slate-200 bg-white shadow-sm transition hover:border-emerald-300 hover:shadow-md"
+                    className="flex h-40 items-center justify-center overflow-hidden rounded-xl border border-slate-200 px-4 shadow-sm transition hover:border-emerald-300 hover:shadow-md"
                   >
                     {adv.logoUrl ? (
                       <SafeImage
@@ -190,7 +190,7 @@ export async function NewsHighlights() {
                         alt={adv.name}
                         width={180}
                         height={96}
-                        className="object-contain"
+                        className="max-h-full max-w-full object-contain"
                       />
                     ) : (
                       <span className="px-4 text-center text-lg font-bold text-slate-700">
