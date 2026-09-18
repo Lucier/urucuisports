@@ -11,6 +11,8 @@ export interface CalendarMatch {
   grupo?: number | null
   roundNome?: string | null
   roundNumero?: number | null
+  homeScorers?: string[]
+  awayScorers?: string[]
 }
 
 function groupLabel(num: number): string {
@@ -30,27 +32,36 @@ function MatchRow({ match, pos }: { match: CalendarMatch; pos: number }) {
   return (
     <div
       className={cn(
-        'flex items-center gap-2 px-2 py-3 transition-colors hover:bg-slate-50 sm:gap-3 sm:px-4 sm:py-4',
+        'flex items-start gap-2 px-2 py-3 transition-colors hover:bg-slate-50 sm:gap-3 sm:px-4 sm:py-4',
         isLive && 'bg-red-50/50',
       )}
     >
-      <span className="hidden w-5 flex-shrink-0 text-right text-xs font-medium text-gray-300 sm:block">
+      <span className="hidden w-5 flex-shrink-0 pt-1.5 text-right text-xs font-medium text-gray-300 sm:block">
         {pos}
       </span>
 
-      <div className="w-12 flex-shrink-0 text-center sm:w-14">
+      <div className="w-12 flex-shrink-0 pt-0.5 text-center sm:w-14">
         <p className="text-xs font-semibold text-slate-600">{dateStr}</p>
         <p className="text-xs text-gray-400">{timeStr}</p>
       </div>
 
-      <div className="flex min-w-0 flex-1 items-center justify-end gap-1.5 sm:gap-2">
-        <span className="min-w-0 truncate text-right text-xs font-semibold text-slate-800 sm:text-sm">
-          {match.homeTeamName}
-        </span>
-        <div className="h-7 w-7 flex-shrink-0 rounded-full bg-gradient-to-br from-slate-500 to-slate-900 sm:h-8 sm:w-8" />
+      <div className="flex min-w-0 flex-1 flex-col items-end gap-0.5">
+        <div className="flex items-center gap-1.5 sm:gap-2">
+          <span className="min-w-0 truncate text-right text-xs font-semibold text-slate-800 sm:text-sm">
+            {match.homeTeamName}
+          </span>
+          <div className="h-7 w-7 flex-shrink-0 rounded-full bg-gradient-to-br from-slate-500 to-slate-900 sm:h-8 sm:w-8" />
+        </div>
+        {showScore && match.homeScorers && match.homeScorers.length > 0 && (
+          <ul className="space-y-0 text-right">
+            {match.homeScorers.map((name, i) => (
+              <li key={i} className="text-[10px] leading-tight text-slate-500">⚽ {name}</li>
+            ))}
+          </ul>
+        )}
       </div>
 
-      <div className="flex w-16 flex-shrink-0 flex-col items-center gap-0.5 sm:w-20">
+      <div className="flex w-16 flex-shrink-0 flex-col items-center gap-0.5 pt-0.5 sm:w-20">
         {showScore ? (
           <span className="text-sm font-bold tabular-nums text-slate-900 sm:text-base">
             {match.homeScore} <span className="text-slate-300">–</span> {match.awayScore}
@@ -72,11 +83,20 @@ function MatchRow({ match, pos }: { match: CalendarMatch; pos: number }) {
         )}
       </div>
 
-      <div className="flex min-w-0 flex-1 items-center gap-1.5 sm:gap-2">
-        <div className="h-7 w-7 flex-shrink-0 rounded-full bg-gradient-to-br from-emerald-600 to-slate-900 sm:h-8 sm:w-8" />
-        <span className="min-w-0 truncate text-xs font-semibold text-slate-800 sm:text-sm">
-          {match.awayTeamName}
-        </span>
+      <div className="flex min-w-0 flex-1 flex-col gap-0.5">
+        <div className="flex items-center gap-1.5 sm:gap-2">
+          <div className="h-7 w-7 flex-shrink-0 rounded-full bg-gradient-to-br from-emerald-600 to-slate-900 sm:h-8 sm:w-8" />
+          <span className="min-w-0 truncate text-xs font-semibold text-slate-800 sm:text-sm">
+            {match.awayTeamName}
+          </span>
+        </div>
+        {showScore && match.awayScorers && match.awayScorers.length > 0 && (
+          <ul className="space-y-0">
+            {match.awayScorers.map((name, i) => (
+              <li key={i} className="text-[10px] leading-tight text-slate-500">⚽ {name}</li>
+            ))}
+          </ul>
+        )}
       </div>
     </div>
   )

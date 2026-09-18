@@ -5,7 +5,7 @@ import Image from 'next/image'
 import { desc, eq, and, isNull, sql } from 'drizzle-orm'
 import { alias } from 'drizzle-orm/pg-core'
 import { db } from '@/database/client'
-import { leagues, teams, standings, topScorers, matches, rounds } from '@/database/schema'
+import { leagues, teams, standings, topScorers, matches, rounds, matchGoals, players } from '@/database/schema'
 import { LeagueTabs, type TabKey } from '@/components/stats/LeagueTabs'
 import { StandingsTable } from '@/components/stats/StandingsTable'
 import { TopScorers } from '@/components/stats/TopScorers'
@@ -57,7 +57,7 @@ export default async function LeaguePage({ params, searchParams }: PageProps) {
   const homeTeamAlias2 = alias(teams, 'home_team_ko')
   const awayTeamAlias2 = alias(teams, 'away_team_ko')
 
-  const [standingRows, scorerRows, matchRows, knockoutRows] = await Promise.all([
+  const [standingRows, scorerRows, matchRows, goalRows, knockoutRows] = await Promise.all([
     db
       .select({
         id: teams.id,
@@ -96,6 +96,8 @@ export default async function LeaguePage({ params, searchParams }: PageProps) {
     db
       .select({
         id: matches.id,
+        homeTeamId: matches.homeTeamId,
+        awayTeamId: matches.awayTeamId,
         homeTeamName: homeTeamAlias.name,
         homeTeamLogo: homeTeamAlias.logoUrl,
         awayTeamName: awayTeamAlias.name,
@@ -114,6 +116,18 @@ export default async function LeaguePage({ params, searchParams }: PageProps) {
       .leftJoin(rounds, eq(matches.roundId, rounds.id))
       .where(eq(matches.leagueId, league.id))
       .orderBy(matches.date),
+
+    db
+      .select({
+        matchId: matchGoals.matchId,
+        teamId: matchGoals.teamId,
+        playerName: players.name,
+        goals: matchGoals.goals,
+      })
+      .from(matchGoals)
+      .innerJoin(players, eq(matchGoals.playerId, players.id))
+      .innerJoin(matches, eq(matchGoals.matchId, matches.id))
+      .where(eq(matches.leagueId, league.id)),
 
     db
       .select({
@@ -136,6 +150,25 @@ export default async function LeaguePage({ params, searchParams }: PageProps) {
       .where(eq(matches.leagueId, league.id))
       .orderBy(rounds.numero, matches.date),
   ])
+
+  // Build goal scorer map: matchId → { teamId → 'PlayerName (×N)' list }
+  const goalMap = new Map<string, Map<string, string[]>>()
+  for (const g of goalRows) {
+    if (!goalMap.has(g.matchId)) goalMap.set(g.matchId, new Map())
+    const teamMap = goalMap.get(g.matchId)!
+    if (!teamMap.has(g.teamId)) teamMap.set(g.teamId, [])
+    const label = g.goals > 1 ? `${g.playerName} (×${g.goals})` : g.playerName
+    teamMap.get(g.teamId)!.push(label)
+  }
+
+  const calendarMatches = matchRows.map((m) => {
+    const scorers = goalMap.get(m.id)
+    return {
+      ...m,
+      homeScorers: m.homeTeamId && scorers?.get(m.homeTeamId) ? scorers.get(m.homeTeamId)! : [],
+      awayScorers: m.awayTeamId && scorers?.get(m.awayTeamId) ? scorers.get(m.awayTeamId)! : [],
+    }
+  })
 
   const FLAG: Record<string, string> = { Brasil: '🇧🇷', 'América do Sul': '🌎' }
   const flag = FLAG[league.country ?? ''] ?? '🏆'
@@ -189,7 +222,7 @@ export default async function LeaguePage({ params, searchParams }: PageProps) {
           <StandingsTable standings={standingRows} leagueType={league.tipo} />
         )}
         {activeTab === 'artilharia' && <TopScorers scorers={scorerRows} />}
-        {activeTab === 'calendario' && <MatchCalendar matches={matchRows} leagueType={league.tipo} />}
+        {activeTab === 'calendario' && <MatchCalendar matches={calendarMatches} leagueType={league.tipo} />}
         {activeTab === 'fase-final' && (
           <KnockoutBracket matches={knockoutRows} />
         )}
