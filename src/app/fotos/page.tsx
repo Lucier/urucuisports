@@ -1,22 +1,31 @@
 export const dynamic = 'force-dynamic'
 
 import type { Metadata } from 'next'
-import { desc } from 'drizzle-orm'
+import { desc, eq } from 'drizzle-orm'
 import { db } from '@/database/client'
 import { photoAlbums } from '@/database/schema'
-import { SPORT_TYPES } from '@/shared/constants'
+import { SPORT_TYPES, type SportType } from '@/shared/constants'
 import { SafeImage } from '@/components/ui/SafeImage'
 import { formatDate } from '@/shared/utils'
+import { SportTypeFilter } from '@/components/photos/SportTypeFilter'
 
 export const metadata: Metadata = {
   title: 'Fotos | Urucuí Sports',
   description: 'Galerias de fotos dos campeonatos e eventos esportivos.',
 }
 
-export default async function FotosPage() {
+interface PageProps {
+  searchParams: Promise<{ esporte?: string }>
+}
+
+export default async function FotosPage({ searchParams }: PageProps) {
+  const { esporte } = await searchParams
+  const validSport = SPORT_TYPES.find((s) => s.value === esporte)?.value ?? null
+
   const albums = await db
     .select()
     .from(photoAlbums)
+    .where(validSport ? eq(photoAlbums.sportType, validSport as SportType) : undefined)
     .orderBy(desc(photoAlbums.createdAt))
 
   return (
@@ -26,14 +35,22 @@ export default async function FotosPage() {
         <p className="mt-1 text-gray-500">Clique em um álbum para ver as fotos</p>
       </div>
 
+      {/* Filtro por tipo de esporte */}
+      <SportTypeFilter active={validSport} />
+
       {albums.length === 0 ? (
-        <div className="flex flex-col items-center gap-3 py-24 text-center">
+        <div className="mt-16 flex flex-col items-center gap-3 text-center">
           <span className="text-6xl" aria-hidden>📷</span>
-          <p className="text-lg font-medium text-slate-700">Nenhuma galeria disponível ainda.</p>
-          <p className="text-sm text-gray-400">As fotos serão publicadas em breve.</p>
+          <p className="text-lg font-medium text-slate-700">
+            {validSport ? 'Nenhuma galeria encontrada para este esporte.' : 'Nenhuma galeria disponível ainda.'}
+          </p>
+          <p className="text-sm text-gray-400">
+            {validSport ? 'Tente selecionar outro esporte acima.' : 'As fotos serão publicadas em breve.'}
+          </p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+
+        <div className="mt-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {albums.map((album) => (
             <a
               key={album.id}

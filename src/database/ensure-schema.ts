@@ -7,6 +7,13 @@ async function main() {
 
   await sql`ALTER TABLE posts ADD COLUMN IF NOT EXISTS author_name varchar(255)`
   await sql`ALTER TABLE photo_albums ADD COLUMN IF NOT EXISTS sport_type varchar(50)`
+  await sql`
+    CREATE TABLE IF NOT EXISTS rate_limits (
+      key varchar(255) PRIMARY KEY,
+      count integer NOT NULL DEFAULT 1,
+      reset_at timestamptz NOT NULL
+    )
+  `
   console.log('Schema ensured.')
   await sql.end()
 }
