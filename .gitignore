@@ -39,3 +39,6 @@ backups/
 
 # Reports
 audit-seguranca-urucuisports.pdf
+
+# Claude Code
+.claude/
