@@ -178,8 +178,8 @@ export function PhotoAlbumManager({ albums, totalCount }: { albums: Album[]; tot
             <span className="ml-2 text-base font-normal text-gray-400">({totalCount})</span>
           </h2>
 
-          <div className="overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-sm">
-            <table className="w-full text-sm">
+          <div className="overflow-x-auto rounded-2xl border border-slate-100 bg-white shadow-sm">
+            <table className="w-full min-w-[480px] text-sm">
               <thead className="bg-slate-50 text-xs font-semibold uppercase tracking-wide text-slate-500">
                 <tr>
                   <th className="px-4 py-3 text-left">Álbum</th>
