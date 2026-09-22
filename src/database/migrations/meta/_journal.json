@@ -78,6 +78,20 @@
       "when": 1757462400000,
       "tag": "0010_add_author_name_to_posts",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1790099080442,
+      "tag": "0011_brainy_mantis",
+      "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1790099816017,
+      "tag": "0012_artilharia_fk",
+      "breakpoints": true
     }
   ]
 }

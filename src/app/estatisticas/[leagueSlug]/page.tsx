@@ -5,7 +5,7 @@ import Image from 'next/image'
 import { desc, eq, and, isNull, sql } from 'drizzle-orm'
 import { alias } from 'drizzle-orm/pg-core'
 import { db } from '@/database/client'
-import { leagues, teams, standings, topScorers, matches, rounds, matchGoals, players } from '@/database/schema'
+import { leagues, teams, standings, artilharia, matches, rounds, matchGoals, players } from '@/database/schema'
 import { LeagueTabs, type TabKey } from '@/components/stats/LeagueTabs'
 import { StandingsTable } from '@/components/stats/StandingsTable'
 import { TopScorers } from '@/components/stats/TopScorers'
@@ -82,16 +82,16 @@ export default async function LeaguePage({ params, searchParams }: PageProps) {
 
     db
       .select({
-        id: topScorers.id,
-        playerName: topScorers.playerName,
+        id: artilharia.id,
+        playerName: artilharia.nomeJogador,
         teamName: teams.name,
-        goals: topScorers.goals,
-        assists: topScorers.assists,
+        fotoUrl: artilharia.fotoUrl,
+        goals: artilharia.gols,
       })
-      .from(topScorers)
-      .leftJoin(teams, eq(topScorers.teamId, teams.id))
-      .where(eq(topScorers.leagueId, league.id))
-      .orderBy(desc(topScorers.goals), desc(topScorers.assists)),
+      .from(artilharia)
+      .innerJoin(teams, eq(artilharia.teamId, teams.id))
+      .where(eq(artilharia.leagueId, league.id))
+      .orderBy(desc(artilharia.gols)),
 
     db
       .select({

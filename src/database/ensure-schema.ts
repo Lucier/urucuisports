@@ -14,6 +14,17 @@ async function main() {
       reset_at timestamptz NOT NULL
     )
   `
+  await sql`DROP TABLE IF EXISTS artilharia`
+  await sql`
+    CREATE TABLE IF NOT EXISTS artilharia (
+      id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+      nome_jogador varchar(255) NOT NULL,
+      league_id uuid NOT NULL REFERENCES leagues(id) ON DELETE CASCADE,
+      team_id uuid NOT NULL REFERENCES teams(id) ON DELETE CASCADE,
+      foto_url text,
+      gols integer NOT NULL DEFAULT 0
+    )
+  `
   console.log('Schema ensured.')
   await sql.end()
 }

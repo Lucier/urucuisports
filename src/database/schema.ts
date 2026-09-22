@@ -86,6 +86,7 @@ export const leaguesRelations = relations(leagues, ({ many }) => ({
   matches: many(matches),
   standings: many(standings),
   topScorers: many(topScorers),
+  artilharia: many(artilharia),
 }))
 
 // ─── Rounds ───────────────────────────────────────────────────────────────────
@@ -170,6 +171,7 @@ export const teamsRelations = relations(teams, ({ one, many }) => ({
   standings: many(standings),
   topScorers: many(topScorers),
   players: many(players),
+  artilharia: many(artilharia),
 }))
 
 // ─── Matches ──────────────────────────────────────────────────────────────────
@@ -355,6 +357,33 @@ export const rateLimits = pgTable('rate_limits', {
   count: integer('count').notNull().default(1),
   resetAt: timestamp('reset_at', { withTimezone: true }).notNull(),
 })
+
+// ─── Artilharia ───────────────────────────────────────────────────────────────
+
+export const artilharia = pgTable(
+  'artilharia',
+  {
+    id: uuid('id').defaultRandom().primaryKey(),
+    nomeJogador: varchar('nome_jogador', { length: 255 }).notNull(),
+    leagueId: uuid('league_id')
+      .notNull()
+      .references(() => leagues.id, { onDelete: 'cascade' }),
+    teamId: uuid('team_id')
+      .notNull()
+      .references(() => teams.id, { onDelete: 'cascade' }),
+    fotoUrl: text('foto_url'),
+    gols: integer('gols').default(0).notNull(),
+  },
+  (table) => [
+    index('idx_artilharia_league').on(table.leagueId),
+    index('idx_artilharia_team').on(table.teamId),
+  ],
+)
+
+export const artilhariaRelations = relations(artilharia, ({ one }) => ({
+  league: one(leagues, { fields: [artilharia.leagueId], references: [leagues.id] }),
+  team: one(teams, { fields: [artilharia.teamId], references: [teams.id] }),
+}))
 
 // ─── Photo Albums ─────────────────────────────────────────────────────────────
 
