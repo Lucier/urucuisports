@@ -15,6 +15,7 @@ type Post = {
   categoryId: string | null
   categoryName: string | null
   authorName: string | null
+  instagramProfile: string | null
   relevancia: number
   createdAt: Date
 }
@@ -127,16 +128,36 @@ export function PostFormSection({ categories, initialPosts, adminId }: Props) {
             </div>
           </div>
 
-          <div>
-            <label className="mb-1 block text-sm font-medium text-slate-700">Autor</label>
-            <input
-              name="authorName"
-              type="text"
-              defaultValue={editingPost?.authorName ?? ''}
-              key={(editingPost?.id ?? 'new') + '-author'}
-              className={inputCls}
-              placeholder="Nome do autor da notícia"
-            />
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <div>
+              <label className="mb-1 block text-sm font-medium text-slate-700">Autor</label>
+              <input
+                name="authorName"
+                type="text"
+                defaultValue={editingPost?.authorName ?? ''}
+                key={(editingPost?.id ?? 'new') + '-author'}
+                className={inputCls}
+                placeholder="Nome do autor da notícia"
+              />
+            </div>
+            <div>
+              <label className="mb-1 block text-sm font-medium text-slate-700">
+                Perfil do Instagram
+              </label>
+              <div className="flex items-center">
+                <span className="flex h-[42px] items-center rounded-l-lg border border-r-0 border-slate-200 bg-slate-50 px-3 text-sm text-slate-500">
+                  @
+                </span>
+                <input
+                  name="instagramProfile"
+                  type="text"
+                  defaultValue={editingPost?.instagramProfile ?? ''}
+                  key={(editingPost?.id ?? 'new') + '-instagram'}
+                  className="w-full rounded-l-none rounded-r-lg border border-slate-200 px-3 py-2.5 text-sm text-slate-900 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20"
+                  placeholder="perfil_instagram"
+                />
+              </div>
+            </div>
           </div>
 
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">

@@ -38,6 +38,7 @@ export default async function AdminNoticiasPage({ searchParams }: Props) {
         categoryId: posts.categoryId,
         categoryName: categories.name,
         authorName: posts.authorName,
+        instagramProfile: posts.instagramProfile,
         relevancia: posts.relevancia,
         createdAt: posts.createdAt,
       })

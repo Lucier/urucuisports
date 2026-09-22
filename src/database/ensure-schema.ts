@@ -6,6 +6,7 @@ async function main() {
   const sql = postgres(process.env.DATABASE_URL!)
 
   await sql`ALTER TABLE posts ADD COLUMN IF NOT EXISTS author_name varchar(255)`
+  await sql`ALTER TABLE posts ADD COLUMN IF NOT EXISTS instagram_profile varchar(255)`
   await sql`ALTER TABLE photo_albums ADD COLUMN IF NOT EXISTS sport_type varchar(50)`
   await sql`
     CREATE TABLE IF NOT EXISTS rate_limits (
