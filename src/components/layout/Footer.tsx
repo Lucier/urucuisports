@@ -8,7 +8,7 @@ const sections = [
       { label: 'Notícias', href: '/noticias' },
       { label: 'Fotos', href: '/fotos' },
       { label: 'Ao Vivo', href: '/transmissoes' },
-      { label: 'Jogos', href: '/jogos' },
+      { label: 'Jogos', href: '/estatisticas' },
     ],
   },
 ]
@@ -16,7 +16,7 @@ const sections = [
 const leagueLinks = [
   { label: 'Uruçuiense Série A', href: '/estatisticas/campeonato-urucuiense-serie-a' },
   { label: 'Uruçuiense Série B', href: '/estatisticas/campeonato-urucuiense-serie-b' },
-  { label: 'Veteranos', href: '/estatisticas/campeonato-urucuiense-veteranos' },
+  { label: 'Veteranos', href: '/estatisticas/campeonato-urucuiense-veterano' },
 ]
 
 export function Footer() {
