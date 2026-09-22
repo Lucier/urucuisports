@@ -67,6 +67,7 @@ export default async function NoticiaPage({ params }: PageProps) {
       categoryName: categories.name,
       categorySlug: categories.slug,
       authorName: posts.authorName,
+      instagramProfile: posts.instagramProfile,
     })
     .from(posts)
     .leftJoin(categories, eq(posts.categoryId, categories.id))
@@ -153,6 +154,48 @@ export default async function NoticiaPage({ params }: PageProps) {
           </p>
         ))}
       </div>
+
+      {/* Instagram */}
+      {post.instagramProfile && (
+        <a
+          href={`https://www.instagram.com/${post.instagramProfile}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="mt-8 flex items-center gap-3 rounded-xl border border-pink-100 bg-gradient-to-r from-pink-50 to-purple-50 px-5 py-4 transition hover:border-pink-200 hover:from-pink-100 hover:to-purple-100"
+        >
+          <svg
+            className="h-8 w-8 flex-shrink-0"
+            viewBox="0 0 24 24"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <defs>
+              <linearGradient id="ig-grad" x1="0%" y1="100%" x2="100%" y2="0%">
+                <stop offset="0%" stopColor="#f09433" />
+                <stop offset="25%" stopColor="#e6683c" />
+                <stop offset="50%" stopColor="#dc2743" />
+                <stop offset="75%" stopColor="#cc2366" />
+                <stop offset="100%" stopColor="#bc1888" />
+              </linearGradient>
+            </defs>
+            <rect width="24" height="24" rx="6" fill="url(#ig-grad)" />
+            <circle cx="12" cy="12" r="4" stroke="white" strokeWidth="1.8" fill="none" />
+            <circle cx="17" cy="7" r="1.2" fill="white" />
+          </svg>
+          <div className="min-w-0">
+            <p className="text-xs font-semibold uppercase tracking-wide text-pink-500">Instagram</p>
+            <p className="truncate font-bold text-slate-800">@{post.instagramProfile}</p>
+          </div>
+          <svg
+            className="ml-auto h-4 w-4 flex-shrink-0 text-slate-400"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+          </svg>
+        </a>
+      )}
 
       {/* Tags / back link */}
       <div className="mt-10 flex items-center justify-between border-t border-slate-100 pt-6">
