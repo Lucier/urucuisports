@@ -605,8 +605,13 @@ function AddMatchForm({
     : teams
 
   const [homeId, setHomeId] = useState('')
+  const didMount = useRef(false)
 
   useEffect(() => {
+    if (!didMount.current) {
+      didMount.current = true
+      return
+    }
     if (state.success) {
       onCancel()
     }
