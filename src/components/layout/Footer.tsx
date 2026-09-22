@@ -16,7 +16,7 @@ const sections = [
 const leagueLinks = [
   { label: 'Uruçuiense Série A', href: '/estatisticas/campeonato-urucuiense-serie-a' },
   { label: 'Uruçuiense Série B', href: '/estatisticas/campeonato-urucuiense-serie-b' },
-  { label: 'Veteranos', href: '/estatisticas/campeonato-urucuiense-veterano' },
+  { label: 'Veterano', href: '/estatisticas/campeonato-urucuiense-veterano' },
 ]
 
 export function Footer() {
