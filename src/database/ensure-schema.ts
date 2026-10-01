@@ -15,7 +15,6 @@ async function main() {
       reset_at timestamptz NOT NULL
     )
   `
-  await sql`DROP TABLE IF EXISTS artilharia`
   await sql`
     CREATE TABLE IF NOT EXISTS artilharia (
       id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
