@@ -1,9 +1,12 @@
+import Image from 'next/image'
 import { cn } from '@/shared/utils'
 
 export interface CalendarMatch {
   id: string
   homeTeamName: string | null
+  homeTeamLogo?: string | null
   awayTeamName: string | null
+  awayTeamLogo?: string | null
   homeScore: number | null
   awayScore: number | null
   status: 'SCHEDULED' | 'LIVE' | 'FINISHED' | 'POSTPONED'
@@ -50,7 +53,17 @@ function MatchRow({ match, pos }: { match: CalendarMatch; pos: number }) {
           <span className="min-w-0 truncate text-right text-xs font-semibold text-slate-800 sm:text-sm">
             {match.homeTeamName}
           </span>
-          <div className="h-7 w-7 flex-shrink-0 rounded-full bg-gradient-to-br from-slate-500 to-slate-900 sm:h-8 sm:w-8" />
+          {match.homeTeamLogo ? (
+            <Image
+              src={match.homeTeamLogo}
+              alt={match.homeTeamName ?? ''}
+              width={32}
+              height={32}
+              className="h-7 w-7 flex-shrink-0 object-contain sm:h-8 sm:w-8"
+            />
+          ) : (
+            <div className="h-7 w-7 flex-shrink-0 rounded-full bg-gradient-to-br from-slate-500 to-slate-900 sm:h-8 sm:w-8" />
+          )}
         </div>
         {showScore && match.homeScorers && match.homeScorers.length > 0 && (
           <ul className="space-y-0 text-right">
@@ -85,7 +98,17 @@ function MatchRow({ match, pos }: { match: CalendarMatch; pos: number }) {
 
       <div className="flex min-w-0 flex-1 flex-col gap-0.5">
         <div className="flex items-center gap-1.5 sm:gap-2">
-          <div className="h-7 w-7 flex-shrink-0 rounded-full bg-gradient-to-br from-emerald-600 to-slate-900 sm:h-8 sm:w-8" />
+          {match.awayTeamLogo ? (
+            <Image
+              src={match.awayTeamLogo}
+              alt={match.awayTeamName ?? ''}
+              width={32}
+              height={32}
+              className="h-7 w-7 flex-shrink-0 object-contain sm:h-8 sm:w-8"
+            />
+          ) : (
+            <div className="h-7 w-7 flex-shrink-0 rounded-full bg-gradient-to-br from-emerald-600 to-slate-900 sm:h-8 sm:w-8" />
+          )}
           <span className="min-w-0 truncate text-xs font-semibold text-slate-800 sm:text-sm">
             {match.awayTeamName}
           </span>
