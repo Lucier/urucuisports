@@ -6,6 +6,7 @@ import { alias } from 'drizzle-orm/pg-core'
 
 type MatchRow = {
   id: string
+  leagueId: string | null
   homeTeamName: string | null
   awayTeamName: string | null
   homeScore: number | null
@@ -90,11 +91,12 @@ export async function MatchesCard() {
   const homeAlias = alias(teams, 'home_team')
   const awayAlias = alias(teams, 'away_team')
 
-  const [liveRows, scheduledRows] = await Promise.all([
+  const [liveRows, allScheduled] = await Promise.all([
     // Ao vivo — todas as ligas
     db
       .select({
         id: matches.id,
+        leagueId: matches.leagueId,
         homeTeamName: homeAlias.name,
         awayTeamName: awayAlias.name,
         homeScore: matches.homeScore,
@@ -111,10 +113,11 @@ export async function MatchesCard() {
       .where(eq(matches.status, 'LIVE'))
       .orderBy(matches.date),
 
-    // Próximos — todas as ligas, os 6 mais próximos
+    // Próximos — busca um lote amplo para filtrar 1 por liga depois
     db
       .select({
         id: matches.id,
+        leagueId: matches.leagueId,
         homeTeamName: homeAlias.name,
         awayTeamName: awayAlias.name,
         homeScore: matches.homeScore,
@@ -130,8 +133,17 @@ export async function MatchesCard() {
       .leftJoin(leagues, eq(matches.leagueId, leagues.id))
       .where(eq(matches.status, 'SCHEDULED'))
       .orderBy(matches.date)
-      .limit(6),
+      .limit(50),
   ])
+
+  // 1 jogo por liga — o mais próximo de cada (já vêm ordenados por data ASC)
+  const seen = new Set<string>()
+  const scheduledRows = allScheduled.filter((m) => {
+    const key = m.leagueId ?? m.leagueName ?? m.id
+    if (seen.has(key)) return false
+    seen.add(key)
+    return true
+  })
 
   if (liveRows.length === 0 && scheduledRows.length === 0) {
     return (
