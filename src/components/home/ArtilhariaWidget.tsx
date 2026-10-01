@@ -20,7 +20,7 @@ export async function ArtilhariaWidget() {
     .innerJoin(leagues, eq(artilharia.leagueId, leagues.id))
     .where(eq(leagues.slug, SERIE_A_SLUG))
     .orderBy(desc(artilharia.gols))
-    .limit(5)
+    .limit(4)
 
   if (rows.length === 0) return null
 
