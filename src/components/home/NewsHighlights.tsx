@@ -225,7 +225,7 @@ export async function NewsHighlights() {
             <div className="mb-3 flex items-center justify-between">
               <h3 className="text-sm font-bold uppercase tracking-wide text-slate-700">Artilharia</h3>
               <Link
-                href="/estatisticas"
+                href="/estatisticas/campeonato-urucuiense-serie-a?aba=artilharia"
                 className="text-xs font-medium text-emerald-600 hover:underline"
               >
                 Ver mais →

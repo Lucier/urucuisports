@@ -4,6 +4,7 @@ import { desc, eq } from 'drizzle-orm'
 import Image from 'next/image'
 
 const MEDAL: Record<number, string> = { 1: '🥇', 2: '🥈', 3: '🥉' }
+const SERIE_A_SLUG = 'campeonato-urucuiense-serie-a'
 
 export async function ArtilhariaWidget() {
   const rows = await db
@@ -13,11 +14,11 @@ export async function ArtilhariaWidget() {
       fotoUrl: artilharia.fotoUrl,
       gols: artilharia.gols,
       teamName: teams.name,
-      leagueName: leagues.name,
     })
     .from(artilharia)
     .innerJoin(teams, eq(artilharia.teamId, teams.id))
     .innerJoin(leagues, eq(artilharia.leagueId, leagues.id))
+    .where(eq(leagues.slug, SERIE_A_SLUG))
     .orderBy(desc(artilharia.gols))
     .limit(5)
 
@@ -64,7 +65,7 @@ export async function ArtilhariaWidget() {
 
               <div className="min-w-0 flex-1">
                 <p className="truncate text-xs font-semibold text-slate-800">{scorer.nomeJogador}</p>
-                <p className="truncate text-xs text-gray-400">{scorer.teamName} · {scorer.leagueName}</p>
+                <p className="truncate text-xs text-gray-400">{scorer.teamName}</p>
               </div>
 
               <div className="flex-shrink-0 text-right">
