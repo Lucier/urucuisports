@@ -62,6 +62,7 @@ export default async function LeaguePage({ params, searchParams }: PageProps) {
       .select({
         id: teams.id,
         teamName: teams.name,
+        logoUrl: teams.logoUrl,
         grupo: teams.grupo,
         played:       sql<number>`COALESCE(${standings.played}, 0)`,
         won:          sql<number>`COALESCE(${standings.won}, 0)`,
