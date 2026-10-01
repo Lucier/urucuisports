@@ -1,8 +1,10 @@
+import Image from 'next/image'
 import { cn } from '@/shared/utils'
 
 export interface StandingRow {
   id: string
   teamName: string | null
+  logoUrl?: string | null
   grupo?: number | null
   played: number
   won: number
@@ -48,7 +50,17 @@ function TableRows({ rows }: { rows: StandingRow[] }) {
             </td>
             <td className="px-2 py-3 sm:px-4 sm:py-3.5">
               <div className="flex items-center gap-2 sm:gap-3">
-                <div className="h-7 w-7 flex-shrink-0 rounded-full bg-gradient-to-br from-slate-500 to-slate-800 sm:h-8 sm:w-8" />
+                {row.logoUrl ? (
+                  <Image
+                    src={row.logoUrl}
+                    alt={row.teamName ?? ''}
+                    width={32}
+                    height={32}
+                    className="h-7 w-7 flex-shrink-0 object-contain sm:h-8 sm:w-8"
+                  />
+                ) : (
+                  <div className="h-7 w-7 flex-shrink-0 rounded-full bg-gradient-to-br from-slate-500 to-slate-800 sm:h-8 sm:w-8" />
+                )}
                 <span className="font-semibold text-slate-800">{row.teamName}</span>
               </div>
             </td>
