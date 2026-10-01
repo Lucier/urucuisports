@@ -4,12 +4,15 @@ import { useActionState, useEffect, useState } from 'react'
 import { useFormStatus } from 'react-dom'
 import Image from 'next/image'
 import { upsertTeamAction, deleteTeamAction, type TeamFormState } from '@/app/admin/times/actions'
+import { LeagueFilter } from '@/components/admin/LeagueFilter'
 
 type Team = {
   id: string
   name: string
   logoUrl: string | null
 }
+
+type League = { id: string; name: string }
 
 const initialState: TeamFormState = {}
 
@@ -49,7 +52,17 @@ function TeamAvatar({ name, logoUrl }: { name: string; logoUrl: string | null })
   )
 }
 
-export function TeamManager({ teams, totalCount }: { teams: Team[]; totalCount: number }) {
+export function TeamManager({
+  teams,
+  totalCount,
+  leagues = [],
+  selectedLeagueId = '',
+}: {
+  teams: Team[]
+  totalCount: number
+  leagues?: League[]
+  selectedLeagueId?: string
+}) {
   const [state, formAction] = useActionState(upsertTeamAction, initialState)
   const [editing, setEditing] = useState<Team | null>(null)
   const [logoPreview, setLogoPreview] = useState<string>('')
@@ -156,10 +169,15 @@ export function TeamManager({ teams, totalCount }: { teams: Team[]; totalCount: 
       {/* Lista */}
       {teams.length > 0 && (
         <div>
-          <h2 className="mb-4 text-lg font-bold text-slate-800">
-            Times cadastrados
-            <span className="ml-2 text-base font-normal text-gray-400">({totalCount})</span>
-          </h2>
+          <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+            <h2 className="text-lg font-bold text-slate-800">
+              Times cadastrados
+              <span className="ml-2 text-base font-normal text-gray-400">({totalCount})</span>
+            </h2>
+            {leagues.length > 0 && (
+              <LeagueFilter leagues={leagues} selected={selectedLeagueId} />
+            )}
+          </div>
 
           <div className="overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-sm">
             <table className="w-full text-sm">

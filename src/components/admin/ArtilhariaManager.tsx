@@ -59,7 +59,14 @@ export function ArtilhariaManager({
   const [editing, setEditing] = useState<Artilheiro | null>(null)
   const [selectedLeagueId, setSelectedLeagueId] = useState<string>('')
   const [fotoPreview, setFotoPreview] = useState<string>('')
+  const [search, setSearch] = useState<string>('')
   const didMount = useRef(false)
+
+  const filteredArtilheiros = search.trim()
+    ? artilheiros.filter((a) =>
+        a.nomeJogador.toLowerCase().includes(search.trim().toLowerCase()),
+      )
+    : artilheiros
 
   const filteredTeams = selectedLeagueId
     ? teams.filter((t) => t.leagueId === selectedLeagueId)
@@ -230,15 +237,29 @@ export function ArtilhariaManager({
       {/* Lista */}
       {totalCount > 0 && (
         <div>
-          <h2 className="mb-4 text-lg font-bold text-slate-800">
-            Artilheiros cadastrados
-            <span className="ml-2 text-base font-normal text-gray-400">({totalCount})</span>
-          </h2>
+          <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+            <h2 className="text-lg font-bold text-slate-800">
+              Artilheiros cadastrados
+              <span className="ml-2 text-base font-normal text-gray-400">({totalCount})</span>
+            </h2>
+            <input
+              type="search"
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Buscar por nome do jogador…"
+              className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-900 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 sm:w-72"
+            />
+          </div>
 
           <div className="overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-sm">
             {/* Mobile */}
             <ul className="divide-y divide-slate-50 sm:hidden">
-              {artilheiros.map((a) => (
+              {filteredArtilheiros.length === 0 && (
+                <li className="px-4 py-8 text-center text-sm text-slate-400">
+                  Nenhum jogador encontrado para &ldquo;{search}&rdquo;
+                </li>
+              )}
+              {filteredArtilheiros.map((a) => (
                 <li key={a.id} className="px-4 py-3">
                   <div className="flex items-center justify-between gap-2">
                     <div>
@@ -288,7 +309,14 @@ export function ArtilhariaManager({
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-50">
-                  {artilheiros.map((a) => (
+                  {filteredArtilheiros.length === 0 && (
+                    <tr>
+                      <td colSpan={5} className="px-4 py-8 text-center text-sm text-slate-400">
+                        Nenhum jogador encontrado para &ldquo;{search}&rdquo;
+                      </td>
+                    </tr>
+                  )}
+                  {filteredArtilheiros.map((a) => (
                     <tr key={a.id} className="hover:bg-slate-50/50">
                       <td className="px-4 py-3 font-medium text-slate-800">{a.nomeJogador}</td>
                       <td className="px-4 py-3 text-slate-600">{a.teamName}</td>
