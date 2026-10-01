@@ -6,6 +6,7 @@ import { NewsCarousel } from './NewsCarousel'
 import { SerieAStatsCard } from './SerieAStatsCard'
 import { MatchesCard } from './MatchesCard'
 import { SafeImage } from '@/components/ui/SafeImage'
+import { ArtilhariaWidget } from './ArtilhariaWidget'
 import { formatDate } from '@/shared/utils'
 
 const AD_SLOTS = 3
@@ -205,18 +206,33 @@ export async function NewsHighlights() {
 
       {/* Jogos e Classificação — sempre visíveis */}
       <div className={hasNews ? 'mt-6 grid grid-cols-1 gap-6 lg:grid-cols-2' : 'grid grid-cols-1 gap-6 lg:grid-cols-2'}>
-        {/* Jogos */}
-        <div>
-          <div className="mb-3 flex items-center justify-between">
-            <h3 className="text-sm font-bold uppercase tracking-wide text-slate-700">Jogos</h3>
-            <Link
-              href="/estatisticas"
-              className="text-xs font-medium text-emerald-600 hover:underline"
-            >
-              Ver mais →
-            </Link>
+        {/* Jogos + Artilharia */}
+        <div className="flex flex-col gap-6">
+          <div>
+            <div className="mb-3 flex items-center justify-between">
+              <h3 className="text-sm font-bold uppercase tracking-wide text-slate-700">Jogos</h3>
+              <Link
+                href="/estatisticas"
+                className="text-xs font-medium text-emerald-600 hover:underline"
+              >
+                Ver mais →
+              </Link>
+            </div>
+            <MatchesCard />
           </div>
-          <MatchesCard />
+
+          <div>
+            <div className="mb-3 flex items-center justify-between">
+              <h3 className="text-sm font-bold uppercase tracking-wide text-slate-700">Artilharia</h3>
+              <Link
+                href="/estatisticas"
+                className="text-xs font-medium text-emerald-600 hover:underline"
+              >
+                Ver mais →
+              </Link>
+            </div>
+            <ArtilhariaWidget />
+          </div>
         </div>
 
         {/* Classificação */}
