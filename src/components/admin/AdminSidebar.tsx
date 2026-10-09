@@ -191,6 +191,8 @@ export function AdminSidebar() {
     router.push('/login')
   }
 
+  const [mobileOpen, setMobileOpen] = useState(false)
+
   return (
     <>
       {/* Confirmation dialog */}
@@ -220,6 +222,79 @@ export function AdminSidebar() {
           </div>
         </div>
       )}
+
+      {/* Mobile menu button */}
+      <div className="flex items-center justify-between rounded-xl border border-slate-100 bg-white px-4 py-3 shadow-sm lg:hidden">
+        <span className="text-sm font-semibold text-slate-700">Admin</span>
+        <button
+          type="button"
+          onClick={() => setMobileOpen(true)}
+          className="rounded-lg p-1.5 text-slate-500 hover:bg-slate-100 hover:text-slate-700"
+          aria-label="Abrir menu"
+        >
+          <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>
+      </div>
+
+      {/* Mobile drawer overlay */}
+      {mobileOpen && (
+        <div
+          className="fixed inset-0 z-40 bg-black/40 backdrop-blur-sm lg:hidden"
+          onClick={() => setMobileOpen(false)}
+        />
+      )}
+
+      {/* Mobile drawer */}
+      <div
+        className={`fixed inset-y-0 left-0 z-50 w-64 transform bg-white shadow-xl transition-transform duration-200 ease-in-out lg:hidden ${
+          mobileOpen ? 'translate-x-0' : '-translate-x-full'
+        }`}
+      >
+        <div className="flex h-full flex-col p-4">
+          <div className="mb-4 flex items-center justify-between">
+            <p className="text-[10px] font-semibold tracking-widest text-slate-400 uppercase">Admin</p>
+            <button
+              type="button"
+              onClick={() => setMobileOpen(false)}
+              className="rounded-lg p-1.5 text-slate-500 hover:bg-slate-100"
+              aria-label="Fechar menu"
+            >
+              <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
+          <nav className="flex flex-col gap-0.5 overflow-y-auto">
+            {links.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                onClick={() => setMobileOpen(false)}
+                className={`flex items-center gap-2.5 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
+                  isActive(link.href, link.exact)
+                    ? 'bg-emerald-50 text-emerald-700'
+                    : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+                }`}
+              >
+                {link.icon}
+                {link.label}
+              </Link>
+            ))}
+          </nav>
+          <div className="mt-auto border-t border-slate-100 pt-3">
+            <button
+              type="button"
+              onClick={() => { setMobileOpen(false); setShowConfirm(true) }}
+              className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2.5 text-sm font-medium text-slate-500 transition-colors hover:bg-red-50 hover:text-red-600"
+            >
+              {logoutIcon}
+              Sair da conta
+            </button>
+          </div>
+        </div>
+      </div>
 
       <aside className="hidden w-52 flex-shrink-0 lg:block">
         <div className="sticky top-20 rounded-2xl border border-slate-100 bg-white p-3 shadow-sm">
