@@ -49,7 +49,7 @@ export default async function AdminArtilhariaPage({ searchParams }: Props) {
       .limit(PAGE_SIZE)
       .offset(offset),
     db.select({ id: leagues.id, name: leagues.name }).from(leagues).orderBy(leagues.name),
-    db.select({ id: teams.id, name: teams.name, leagueId: teams.leagueId }).from(teams).orderBy(teams.name),
+    db.select({ id: teams.id, name: teams.name, leagueId: teams.leagueId, logoUrl: teams.logoUrl }).from(teams).orderBy(teams.name),
   ])
 
   const totalPages = Math.ceil(total / PAGE_SIZE)

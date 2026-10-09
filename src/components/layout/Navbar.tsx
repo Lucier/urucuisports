@@ -10,6 +10,7 @@ const navLinks = [
   { label: 'Fotos', href: '/fotos' },
   { label: 'Ao Vivo', href: '/transmissoes' },
   { label: 'Jogos', href: '/estatisticas' },
+  { label: 'Artilharia', href: '/artilharia' },
 ]
 
 const adminLinks = [
@@ -19,6 +20,7 @@ const adminLinks = [
   { label: 'Times', href: '/admin/times' },
   { label: 'Jogadores', href: '/admin/jogadores' },
   { label: 'Fotos', href: '/admin/fotos' },
+  { label: 'Artilharia', href: '/admin/artilharia' },
   { label: 'Rodadas', href: '/admin/rodadas' },
   { label: 'Transmissões', href: '/admin/transmissoes' },
   { label: 'Anunciantes', href: '/admin/anunciantes' },
