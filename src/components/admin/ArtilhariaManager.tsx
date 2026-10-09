@@ -1,16 +1,16 @@
 'use client'
 
-import { useActionState, useEffect, useRef, useState } from 'react'
-import { useFormStatus } from 'react-dom'
-import Image from 'next/image'
 import {
-  upsertArtilhariaAction,
   deleteArtilhariaAction,
+  upsertArtilhariaAction,
   type ArtilhariaFormState,
 } from '@/app/admin/artilharia/actions'
+import Image from 'next/image'
+import { useActionState, useEffect, useRef, useState } from 'react'
+import { useFormStatus } from 'react-dom'
 
 type League = { id: string; name: string }
-type Team = { id: string; name: string; leagueId: string | null }
+type Team = { id: string; name: string; leagueId: string | null; logoUrl: string | null }
 
 type Artilheiro = {
   id: string
@@ -58,7 +58,8 @@ export function ArtilhariaManager({
   const [state, formAction] = useActionState(upsertArtilhariaAction, initialState)
   const [editing, setEditing] = useState<Artilheiro | null>(null)
   const [selectedLeagueId, setSelectedLeagueId] = useState<string>('')
-  const [fotoPreview, setFotoPreview] = useState<string>('')
+  const [selectedTeamId, setSelectedTeamId] = useState<string>('')
+  const [fotoUrl, setFotoUrl] = useState<string>('')
   const [search, setSearch] = useState<string>('')
   const [filterLeagueId, setFilterLeagueId] = useState<string>('')
   const didMount = useRef(false)
@@ -71,9 +72,7 @@ export function ArtilhariaManager({
     return matchesName && matchesLeague
   })
 
-  const filteredTeams = selectedLeagueId
-    ? teams.filter((t) => t.leagueId === selectedLeagueId)
-    : []
+  const filteredTeams = selectedLeagueId ? teams.filter((t) => t.leagueId === selectedLeagueId) : []
 
   useEffect(() => {
     if (!didMount.current) {
@@ -83,21 +82,24 @@ export function ArtilhariaManager({
     if (state.success) {
       setEditing(null)
       setSelectedLeagueId('')
-      setFotoPreview('')
+      setSelectedTeamId('')
+      setFotoUrl('')
     }
   }, [state])
 
   function startEdit(artilheiro: Artilheiro) {
     setEditing(artilheiro)
     setSelectedLeagueId(artilheiro.leagueId)
-    setFotoPreview(artilheiro.fotoUrl ?? '')
+    setSelectedTeamId(artilheiro.teamId)
+    setFotoUrl(artilheiro.fotoUrl ?? '')
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
   function cancel() {
     setEditing(null)
     setSelectedLeagueId('')
-    setFotoPreview('')
+    setSelectedTeamId('')
+    setFotoUrl('')
   }
 
   return (
@@ -110,7 +112,6 @@ export function ArtilhariaManager({
 
         <form action={formAction} className="space-y-4">
           {editing && <input type="hidden" name="id" value={editing.id} />}
-
           <div>
             <label className="mb-1 block text-sm font-medium text-slate-700">
               Nome do jogador <span className="text-red-500">*</span>
@@ -124,7 +125,6 @@ export function ArtilhariaManager({
               placeholder="Ex: João Silva"
             />
           </div>
-
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <div>
               <label className="mb-1 block text-sm font-medium text-slate-700">
@@ -134,12 +134,19 @@ export function ArtilhariaManager({
                 name="leagueId"
                 required
                 value={selectedLeagueId}
-                onChange={(e) => setSelectedLeagueId(e.target.value)}
+                onChange={(e) => {
+                  setSelectedLeagueId(e.target.value)
+                  setSelectedTeamId('')
+                }}
                 className={selectCls}
               >
-                <option value="" disabled>Selecione uma liga…</option>
+                <option value="" disabled>
+                  Selecione uma liga…
+                </option>
                 {leagues.map((l) => (
-                  <option key={l.id} value={l.id}>{l.name}</option>
+                  <option key={l.id} value={l.id}>
+                    {l.name}
+                  </option>
                 ))}
               </select>
             </div>
@@ -152,20 +159,25 @@ export function ArtilhariaManager({
                 name="teamId"
                 required
                 disabled={!selectedLeagueId}
-                defaultValue={editing?.teamId ?? ''}
-                key={`team-${selectedLeagueId}`}
+                value={selectedTeamId}
+                onChange={(e) => {
+                  const team = teams.find((t) => t.id === e.target.value)
+                  setSelectedTeamId(e.target.value)
+                  setFotoUrl(team?.logoUrl ?? '')
+                }}
                 className={selectCls}
               >
                 <option value="" disabled>
                   {selectedLeagueId ? 'Selecione um time…' : 'Selecione a liga primeiro'}
                 </option>
                 {filteredTeams.map((t) => (
-                  <option key={t.id} value={t.id}>{t.name}</option>
+                  <option key={t.id} value={t.id}>
+                    {t.name}
+                  </option>
                 ))}
               </select>
             </div>
           </div>
-
           <div className="w-32">
             <label className="mb-1 block text-sm font-medium text-slate-700">
               Gols <span className="text-red-500">*</span>
@@ -180,37 +192,36 @@ export function ArtilhariaManager({
               className={inputCls}
             />
           </div>
-
           <div>
             <label className="mb-1 block text-sm font-medium text-slate-700">
               Foto do jogador
               <span className="ml-1 text-xs font-normal text-slate-400">(URL — opcional)</span>
             </label>
             <div className="flex items-center gap-3">
-              {fotoPreview && (
+              {fotoUrl && (
                 <div className="relative h-12 w-12 flex-shrink-0 overflow-hidden rounded-full border border-slate-200 bg-slate-100">
                   <Image
-                    src={fotoPreview}
+                    src={fotoUrl}
                     alt="Preview"
                     fill
                     sizes="48px"
                     className="object-cover"
-                    onError={(e) => { (e.target as HTMLImageElement).parentElement!.style.display = 'none' }}
+                    onError={(e) => {
+                      ;(e.target as HTMLImageElement).parentElement!.style.display = 'none'
+                    }}
                   />
                 </div>
               )}
               <input
                 name="fotoUrl"
                 type="url"
-                defaultValue={editing?.fotoUrl ?? ''}
-                key={editing?.id ?? 'new-foto'}
+                value={fotoUrl}
+                onChange={(e) => setFotoUrl(e.target.value)}
                 className={inputCls}
                 placeholder="https://..."
-                onChange={(e) => setFotoPreview(e.target.value)}
               />
             </div>
           </div>
-
           {state.error && (
             <div className="rounded-lg border border-red-100 bg-red-50 px-4 py-3 text-sm text-red-700">
               {state.error}
@@ -221,7 +232,6 @@ export function ArtilhariaManager({
               {state.success}
             </div>
           )}
-
           <div className="flex flex-wrap gap-3">
             <SubmitButton editing={!!editing} />
             {editing && (
@@ -251,16 +261,18 @@ export function ArtilhariaManager({
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Buscar por nome do jogador…"
-                className="min-w-0 flex-1 rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-900 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 sm:w-56"
+                className="min-w-0 flex-1 rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-900 transition outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 sm:w-56"
               />
               <select
                 value={filterLeagueId}
                 onChange={(e) => setFilterLeagueId(e.target.value)}
-                className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 sm:w-44"
+                className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 transition outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 sm:w-44"
               >
                 <option value="">Todas as ligas</option>
                 {leagues.map((l) => (
-                  <option key={l.id} value={l.id}>{l.name}</option>
+                  <option key={l.id} value={l.id}>
+                    {l.name}
+                  </option>
                 ))}
               </select>
             </div>
@@ -314,7 +326,7 @@ export function ArtilhariaManager({
             {/* Desktop */}
             <div className="hidden overflow-x-auto sm:block">
               <table className="w-full text-sm">
-                <thead className="bg-slate-50 text-xs font-semibold uppercase tracking-wide text-slate-500">
+                <thead className="bg-slate-50 text-xs font-semibold tracking-wide text-slate-500 uppercase">
                   <tr>
                     <th className="px-4 py-3 text-left">Jogador</th>
                     <th className="px-4 py-3 text-left">Time</th>
@@ -335,7 +347,7 @@ export function ArtilhariaManager({
                     <tr key={a.id} className="hover:bg-slate-50/50">
                       <td className="px-4 py-3 font-medium text-slate-800">{a.nomeJogador}</td>
                       <td className="px-4 py-3 text-slate-600">{a.teamName}</td>
-                      <td className="px-4 py-3 text-slate-500 text-xs">{a.leagueName}</td>
+                      <td className="px-4 py-3 text-xs text-slate-500">{a.leagueName}</td>
                       <td className="px-4 py-3 text-center">
                         <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-emerald-50 text-xs font-bold text-emerald-700">
                           {a.gols}

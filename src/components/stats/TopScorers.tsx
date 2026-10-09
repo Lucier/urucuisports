@@ -26,7 +26,7 @@ export function TopScorers({ scorers }: { scorers: ScorerRow[] }) {
 
   return (
     <div className="overflow-hidden rounded-xl border border-slate-100 bg-white shadow-sm">
-      <div className="grid grid-cols-[2rem_1fr_3.5rem] gap-2 border-b border-slate-100 bg-slate-50 px-3 py-2.5 text-xs font-semibold uppercase tracking-wide text-gray-400 sm:grid-cols-[2.5rem_1fr_5rem] sm:gap-3 sm:px-4">
+      <div className="grid grid-cols-[2rem_1fr_3.5rem] gap-2 border-b border-slate-100 bg-slate-50 px-3 py-2.5 text-xs font-semibold tracking-wide text-gray-400 uppercase sm:grid-cols-[2.5rem_1fr_5rem] sm:gap-3 sm:px-4">
         <span>#</span>
         <span>Jogador</span>
         <span className="text-center">Gols</span>
@@ -69,7 +69,9 @@ export function TopScorers({ scorers }: { scorers: ScorerRow[] }) {
                       fill
                       sizes="36px"
                       className="object-cover"
-                      onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
+                      onError={(e) => {
+                        ;(e.target as HTMLImageElement).style.display = 'none'
+                      }}
                     />
                   )}
                 </div>
