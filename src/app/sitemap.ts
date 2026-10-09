@@ -6,7 +6,7 @@ import { isNull, desc } from 'drizzle-orm'
 export const dynamic = 'force-dynamic'
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const base = (process.env.NEXT_PUBLIC_API_URL ?? 'https://urucuisports.com').replace(/\/$/, '')
+  const base = (process.env.NEXT_PUBLIC_SITE_URL ?? 'https://urucuisports.com').replace(/\/$/, '')
 
   const [allPosts, allLeagues] = await Promise.all([
     db
