@@ -60,13 +60,16 @@ export function ArtilhariaManager({
   const [selectedLeagueId, setSelectedLeagueId] = useState<string>('')
   const [fotoPreview, setFotoPreview] = useState<string>('')
   const [search, setSearch] = useState<string>('')
+  const [filterLeagueId, setFilterLeagueId] = useState<string>('')
   const didMount = useRef(false)
 
-  const filteredArtilheiros = search.trim()
-    ? artilheiros.filter((a) =>
-        a.nomeJogador.toLowerCase().includes(search.trim().toLowerCase()),
-      )
-    : artilheiros
+  const filteredArtilheiros = artilheiros.filter((a) => {
+    const matchesName = search.trim()
+      ? a.nomeJogador.toLowerCase().includes(search.trim().toLowerCase())
+      : true
+    const matchesLeague = filterLeagueId ? a.leagueId === filterLeagueId : true
+    return matchesName && matchesLeague
+  })
 
   const filteredTeams = selectedLeagueId
     ? teams.filter((t) => t.leagueId === selectedLeagueId)
@@ -242,13 +245,25 @@ export function ArtilhariaManager({
               Artilheiros cadastrados
               <span className="ml-2 text-base font-normal text-gray-400">({totalCount})</span>
             </h2>
-            <input
-              type="search"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Buscar por nome do jogador…"
-              className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-900 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 sm:w-72"
-            />
+            <div className="flex w-full flex-wrap gap-2 sm:w-auto">
+              <input
+                type="search"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Buscar por nome do jogador…"
+                className="min-w-0 flex-1 rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-900 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 sm:w-56"
+              />
+              <select
+                value={filterLeagueId}
+                onChange={(e) => setFilterLeagueId(e.target.value)}
+                className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm text-slate-900 outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 sm:w-44"
+              >
+                <option value="">Todas as ligas</option>
+                {leagues.map((l) => (
+                  <option key={l.id} value={l.id}>{l.name}</option>
+                ))}
+              </select>
+            </div>
           </div>
 
           <div className="overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-sm">
@@ -256,7 +271,7 @@ export function ArtilhariaManager({
             <ul className="divide-y divide-slate-50 sm:hidden">
               {filteredArtilheiros.length === 0 && (
                 <li className="px-4 py-8 text-center text-sm text-slate-400">
-                  Nenhum jogador encontrado para &ldquo;{search}&rdquo;
+                  Nenhum jogador encontrado para os filtros aplicados.
                 </li>
               )}
               {filteredArtilheiros.map((a) => (
@@ -312,7 +327,7 @@ export function ArtilhariaManager({
                   {filteredArtilheiros.length === 0 && (
                     <tr>
                       <td colSpan={5} className="px-4 py-8 text-center text-sm text-slate-400">
-                        Nenhum jogador encontrado para &ldquo;{search}&rdquo;
+                        Nenhum jogador encontrado para os filtros aplicados.
                       </td>
                     </tr>
                   )}
