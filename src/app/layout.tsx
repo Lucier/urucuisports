@@ -7,7 +7,7 @@ import { Footer } from '@/components/layout/Footer'
 const geistSans = Geist({ variable: '--font-geist-sans', subsets: ['latin'] })
 const geistMono = Geist_Mono({ variable: '--font-geist-mono', subsets: ['latin'] })
 
-const BASE_URL = (process.env.NEXT_PUBLIC_API_URL ?? 'https://urucuisports.com').replace(/\/$/, '')
+const BASE_URL = (process.env.NEXT_PUBLIC_SITE_URL ?? 'https://urucuisports.com.br').replace(/\/$/, '')
 
 export const metadata: Metadata = {
   metadataBase: new URL(BASE_URL),
