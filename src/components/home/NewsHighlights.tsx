@@ -147,7 +147,7 @@ export async function NewsHighlights() {
                       src={mobileAd.logoUrl}
                       alt={mobileAd.name}
                       sizes="100vw"
-                      className="object-cover"
+                      className="object-contain p-2"
                     />
                   ) : (
                     <span className="px-4 text-center text-lg font-bold text-slate-700">
@@ -189,7 +189,7 @@ export async function NewsHighlights() {
                         src={adv.logoUrl}
                         alt={adv.name}
                         sizes="33vw"
-                        className="object-cover"
+                        className="object-contain p-2"
                       />
                     ) : (
                       <span className="px-4 text-center text-lg font-bold text-slate-700">

@@ -37,7 +37,8 @@ const nextConfig: NextConfig = {
       { protocol: 'https', hostname: '**' },
       { protocol: 'http', hostname: 'localhost' },
     ],
-    formats: ['image/avif', 'image/webp'],
+    formats: ['image/webp'],
+    quality: 85,
   },
   async headers() {
     return [
