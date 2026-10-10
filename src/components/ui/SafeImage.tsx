@@ -37,6 +37,7 @@ export function SafeImage(props: Props) {
         alt={alt}
         width={width}
         height={height}
+        quality={85}
         className={className}
         priority={priority}
         onError={() => setHidden(true)}
@@ -51,6 +52,7 @@ export function SafeImage(props: Props) {
       alt={alt}
       fill
       sizes={sizes}
+      quality={85}
       priority={priority}
       className={className}
       onError={() => setHidden(true)}

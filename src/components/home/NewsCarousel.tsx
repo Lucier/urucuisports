@@ -64,6 +64,7 @@ export function NewsCarousel({ posts }: Props) {
                 alt={p.title}
                 fill
                 sizes="(max-width: 1024px) 100vw, 66vw"
+                quality={85}
                 className="object-cover"
                 onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
               />
