@@ -4,6 +4,8 @@ import Link from 'next/link'
 import { eq, isNull, and } from 'drizzle-orm'
 import { db } from '@/database/client'
 import { posts, categories } from '@/database/schema'
+
+const PUBLISHED = eq(posts.status, 'pronto')
 import { SafeImage } from '@/components/ui/SafeImage'
 import { formatDateTime, resolveImageUrl } from '@/shared/utils'
 
@@ -16,7 +18,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const [post] = await db
     .select({ title: posts.title, content: posts.content, imageUrl: posts.imageUrl })
     .from(posts)
-    .where(and(eq(posts.slug, slug), isNull(posts.deletedAt)))
+    .where(and(eq(posts.slug, slug), isNull(posts.deletedAt), PUBLISHED))
     .limit(1)
 
   if (!post) return {}
@@ -54,6 +56,7 @@ export async function generateStaticParams() {
   }
 }
 
+
 export default async function NoticiaPage({ params }: PageProps) {
   const { slug } = await params
 
@@ -72,7 +75,7 @@ export default async function NoticiaPage({ params }: PageProps) {
     })
     .from(posts)
     .leftJoin(categories, eq(posts.categoryId, categories.id))
-    .where(and(eq(posts.slug, slug), isNull(posts.deletedAt)))
+    .where(and(eq(posts.slug, slug), isNull(posts.deletedAt), PUBLISHED))
     .limit(1)
 
   if (!post) notFound()

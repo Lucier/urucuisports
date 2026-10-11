@@ -7,6 +7,13 @@ async function main() {
 
   await sql`ALTER TABLE posts ADD COLUMN IF NOT EXISTS author_name varchar(255)`
   await sql`ALTER TABLE posts ADD COLUMN IF NOT EXISTS instagram_profile varchar(255)`
+  await sql`
+    DO $$ BEGIN
+      CREATE TYPE post_status AS ENUM ('rascunho', 'revisada', 'pronto');
+    EXCEPTION WHEN duplicate_object THEN NULL;
+    END $$
+  `
+  await sql`ALTER TABLE posts ADD COLUMN IF NOT EXISTS status post_status NOT NULL DEFAULT 'rascunho'`
   await sql`ALTER TABLE photo_albums ADD COLUMN IF NOT EXISTS sport_type varchar(50)`
   await sql`
     CREATE TABLE IF NOT EXISTS rate_limits (

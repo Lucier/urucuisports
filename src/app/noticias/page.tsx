@@ -4,6 +4,8 @@ import type { Metadata } from 'next'
 import { desc, eq, isNull, and, ne } from 'drizzle-orm'
 import { db } from '@/database/client'
 import { posts, categories } from '@/database/schema'
+
+const PUBLISHED = eq(posts.status, 'pronto')
 import { CategoryFilter } from '@/components/news/CategoryFilter'
 import { PostCard } from '@/components/news/PostCard'
 
@@ -40,8 +42,8 @@ export default async function NoticiasPage({ searchParams }: PageProps) {
       .leftJoin(categories, eq(posts.categoryId, categories.id))
       .where(
         categoria
-          ? and(isNull(posts.deletedAt), eq(categories.slug, categoria))
-          : isNull(posts.deletedAt),
+          ? and(isNull(posts.deletedAt), PUBLISHED, eq(categories.slug, categoria))
+          : and(isNull(posts.deletedAt), PUBLISHED),
       )
       .orderBy(desc(posts.createdAt))
       .limit(100),

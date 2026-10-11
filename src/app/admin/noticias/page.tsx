@@ -40,6 +40,7 @@ export default async function AdminNoticiasPage({ searchParams }: Props) {
         authorName: posts.authorName,
         instagramProfile: posts.instagramProfile,
         relevancia: posts.relevancia,
+        status: posts.status,
         createdAt: posts.createdAt,
       })
       .from(posts)

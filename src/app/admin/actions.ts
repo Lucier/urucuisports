@@ -35,6 +35,7 @@ const postSchema = z.object({
   relevancia: z.coerce.number().int().min(0).max(5),
   authorName: z.string().max(255).optional().or(z.literal('')),
   instagramProfile: z.string().max(255).optional().or(z.literal('')),
+  status: z.enum(['rascunho', 'revisada', 'pronto']).default('rascunho'),
 })
 
 const matchSchema = z.object({
@@ -73,6 +74,7 @@ export async function upsertPostAction(
     relevancia: formData.get('relevancia') ?? '1',
     authorName: formData.get('authorName') || '',
     instagramProfile: formData.get('instagramProfile') || '',
+    status: formData.get('status') || 'rascunho',
   }
 
   const parsed = postSchema.safeParse(raw)
@@ -81,7 +83,7 @@ export async function upsertPostAction(
     return { error: msg }
   }
 
-  const { title, slug, content, categoryId, imageUrl, relevancia, authorName, instagramProfile } = parsed.data
+  const { title, slug, content, categoryId, imageUrl, relevancia, authorName, instagramProfile, status } = parsed.data
   const id = formData.get('id') as string | null
   const currentUser = await requireRole(UserRole.ADMIN)
 
@@ -89,7 +91,7 @@ export async function upsertPostAction(
     if (id) {
       await db
         .update(posts)
-        .set({ title, slug, content, categoryId, imageUrl: imageUrl || null, relevancia, authorName: authorName || null, instagramProfile: instagramProfile || null })
+        .set({ title, slug, content, categoryId, imageUrl: imageUrl || null, relevancia, authorName: authorName || null, instagramProfile: instagramProfile || null, status })
         .where(and(eq(posts.id, id), isNull(posts.deletedAt)))
     } else {
       await db.insert(posts).values({
@@ -102,6 +104,7 @@ export async function upsertPostAction(
         authorId: currentUser.userId,
         authorName: authorName || null,
         instagramProfile: instagramProfile || null,
+        status,
       })
     }
   } catch (err: unknown) {

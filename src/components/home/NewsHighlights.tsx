@@ -2,6 +2,8 @@ import Link from 'next/link'
 import { asc, desc, eq, gt, isNull, and } from 'drizzle-orm'
 import { db } from '@/database/client'
 import { posts, categories, advertisers } from '@/database/schema'
+
+const PUBLISHED = eq(posts.status, 'pronto')
 import { NewsCarousel } from './NewsCarousel'
 import { SerieAStatsCard } from './SerieAStatsCard'
 import { MatchesCard } from './MatchesCard'
@@ -27,7 +29,7 @@ export async function NewsHighlights() {
       })
       .from(posts)
       .leftJoin(categories, eq(posts.categoryId, categories.id))
-      .where(and(gt(posts.relevancia, 0), isNull(posts.deletedAt)))
+      .where(and(gt(posts.relevancia, 0), isNull(posts.deletedAt), PUBLISHED))
       .orderBy(asc(posts.relevancia), desc(posts.createdAt))
       .limit(5),
 
@@ -42,7 +44,7 @@ export async function NewsHighlights() {
       })
       .from(posts)
       .innerJoin(categories, eq(posts.categoryId, categories.id))
-      .where(and(eq(categories.slug, 'futebol-local'), isNull(posts.deletedAt)))
+      .where(and(eq(categories.slug, 'futebol-local'), isNull(posts.deletedAt), PUBLISHED))
       .orderBy(desc(posts.createdAt))
       .limit(4),
 

@@ -22,6 +22,7 @@ export const matchStatusEnum = pgEnum('match_status', [
 ])
 export const streamStatusEnum = pgEnum('stream_status', ['LIVE', 'SCHEDULED', 'FINISHED'])
 export const leagueTypeEnum = pgEnum('league_type', ['pontos_corridos', 'grupos'])
+export const postStatusEnum = pgEnum('post_status', ['rascunho', 'revisada', 'pronto'])
 
 // ─── Users ────────────────────────────────────────────────────────────────────
 
@@ -140,6 +141,7 @@ export const posts = pgTable(
     authorName: varchar('author_name', { length: 255 }),
     instagramProfile: varchar('instagram_profile', { length: 255 }),
     relevancia: integer('relevancia').default(1).notNull(),
+    status: postStatusEnum('status').default('rascunho').notNull(),
     createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
     deletedAt: timestamp('deleted_at', { withTimezone: true }),
   },

@@ -6,6 +6,8 @@ import { upsertPostAction, deletePostAction, type PostFormState } from '@/app/ad
 
 type Category = { id: string; name: string }
 
+type PostStatus = 'rascunho' | 'revisada' | 'pronto'
+
 type Post = {
   id: string
   title: string
@@ -17,7 +19,20 @@ type Post = {
   authorName: string | null
   instagramProfile: string | null
   relevancia: number
+  status: PostStatus
   createdAt: Date
+}
+
+const STATUS_LABELS: Record<PostStatus, string> = {
+  rascunho: 'Rascunho',
+  revisada: 'Revisada',
+  pronto: 'Pronto',
+}
+
+const STATUS_CLASSES: Record<PostStatus, string> = {
+  rascunho: 'bg-slate-100 text-slate-500',
+  revisada: 'bg-amber-50 text-amber-700',
+  pronto: 'bg-emerald-50 text-emerald-700',
 }
 
 interface Props {
@@ -36,7 +51,7 @@ function SubmitButton({ editing }: { editing: boolean }) {
       disabled={pending}
       className="rounded-lg bg-emerald-600 px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-emerald-700 disabled:opacity-60"
     >
-      {pending ? 'Salvando…' : editing ? 'Atualizar notícia' : 'Publicar notícia'}
+      {pending ? 'Salvando…' : editing ? 'Atualizar notícia' : 'Salvar notícia'}
     </button>
   )
 }
@@ -160,7 +175,7 @@ export function PostFormSection({ categories, initialPosts, adminId }: Props) {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <div>
               <label className="mb-1 block text-sm font-medium text-slate-700">Categoria</label>
               <select
@@ -212,6 +227,20 @@ export function PostFormSection({ categories, initialPosts, adminId }: Props) {
                 <option value={0}>0 — Fora do carrocel</option>
               </select>
             </div>
+            <div>
+              <label className="mb-1 block text-sm font-medium text-slate-700">Status</label>
+              <select
+                name="status"
+                required
+                defaultValue={editingPost?.status ?? 'rascunho'}
+                key={(editingPost?.id ?? 'new') + '-status'}
+                className={inputCls}
+              >
+                <option value="rascunho">Rascunho</option>
+                <option value="revisada">Revisada</option>
+                <option value="pronto">Pronto</option>
+              </select>
+            </div>
           </div>
 
           <div>
@@ -260,7 +289,12 @@ export function PostFormSection({ categories, initialPosts, adminId }: Props) {
           <ul className="divide-y divide-slate-50 sm:hidden">
             {initialPosts.map((post) => (
               <li key={post.id} className="px-4 py-3">
-                <p className="font-medium text-slate-800 leading-snug">{post.title}</p>
+                <div className="flex items-center gap-2">
+                  <p className="font-medium text-slate-800 leading-snug">{post.title}</p>
+                  <span className={`inline-block rounded-full px-2 py-0.5 text-xs font-medium ${STATUS_CLASSES[post.status]}`}>
+                    {STATUS_LABELS[post.status]}
+                  </span>
+                </div>
                 <p className="mt-0.5 text-xs text-slate-400">
                   {post.categoryName ?? '—'} · {new Date(post.createdAt).toLocaleDateString('pt-BR')} · Relevância:{' '}
                   {post.relevancia === 0 ? 'Fora do carrocel' : post.relevancia}
@@ -295,6 +329,7 @@ export function PostFormSection({ categories, initialPosts, adminId }: Props) {
                 <tr>
                   <th className="px-4 py-3 text-left">Título</th>
                   <th className="px-4 py-3 text-left">Categoria</th>
+                  <th className="px-4 py-3 text-center">Status</th>
                   <th className="px-4 py-3 text-center">Relevância</th>
                   <th className="px-4 py-3 text-left">Data</th>
                   <th className="px-4 py-3" />
@@ -305,6 +340,11 @@ export function PostFormSection({ categories, initialPosts, adminId }: Props) {
                   <tr key={post.id} className="hover:bg-slate-50/50">
                     <td className="px-4 py-3 font-medium text-slate-800">{post.title}</td>
                     <td className="px-4 py-3 text-slate-500">{post.categoryName ?? '—'}</td>
+                    <td className="px-4 py-3 text-center">
+                      <span className={`inline-block rounded-full px-2.5 py-0.5 text-xs font-medium ${STATUS_CLASSES[post.status]}`}>
+                        {STATUS_LABELS[post.status]}
+                      </span>
+                    </td>
                     <td className="px-4 py-3 text-center">
                       {post.relevancia === 0 ? (
                         <span className="inline-block rounded-full bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-500">
