@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 import { useState } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
 
@@ -80,9 +81,14 @@ export function Navbar() {
       <div className="mx-auto max-w-7xl px-4">
         <div className="flex h-16 items-center justify-between">
           <Link href="/" className="flex items-center gap-2 text-lg font-bold">
-            <span className="text-2xl" aria-hidden>
-              ⚽
-            </span>
+            <Image
+              src="/logo.png"
+              alt="Uruçuí Sports"
+              width={36}
+              height={36}
+              className="rounded-sm object-contain"
+              priority
+            />
             <span>
               Uruçuí <span className="text-emerald-400">Sports</span>
             </span>
