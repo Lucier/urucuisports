@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import NextImage from 'next/image'
+import { resolveImageUrl } from '@/shared/utils'
 
 interface FillProps {
   src: string
@@ -31,13 +32,14 @@ export function SafeImage(props: Props) {
 
   if ('width' in props && props.width !== undefined) {
     const { src, alt, className, width, height, priority = false } = props
+    const resolvedSrc = resolveImageUrl(src) ?? src
     return (
       <NextImage
-        src={src}
+        src={resolvedSrc}
         alt={alt}
         width={width}
         height={height}
-        quality={85}
+        quality={90}
         className={className}
         priority={priority}
         onError={() => setHidden(true)}
@@ -46,13 +48,14 @@ export function SafeImage(props: Props) {
   }
 
   const { src, alt, className, sizes = '100vw', priority = false } = props
+  const resolvedSrc = resolveImageUrl(src) ?? src
   return (
     <NextImage
-      src={src}
+      src={resolvedSrc}
       alt={alt}
       fill
       sizes={sizes}
-      quality={85}
+      quality={90}
       priority={priority}
       className={className}
       onError={() => setHidden(true)}

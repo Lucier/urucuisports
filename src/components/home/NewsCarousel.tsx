@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { formatDate } from '@/shared/utils'
+import { formatDate, resolveImageUrl } from '@/shared/utils'
 
 type Post = {
   id: string
@@ -58,13 +58,13 @@ export function NewsCarousel({ posts }: Props) {
           >
             {/* Fundo: gradiente sempre visível + imagem sobreposta */}
             <div className="absolute inset-0 bg-gradient-to-br from-emerald-900 via-slate-800 to-slate-900" />
-            {p.imageUrl && (
+            {resolveImageUrl(p.imageUrl) && (
               <Image
-                src={p.imageUrl}
+                src={resolveImageUrl(p.imageUrl)!}
                 alt={p.title}
                 fill
-                sizes="(max-width: 1024px) 100vw, 66vw"
-                quality={85}
+                sizes="100vw"
+                quality={90}
                 className="object-cover"
                 onError={(e) => { (e.target as HTMLImageElement).style.display = 'none' }}
               />

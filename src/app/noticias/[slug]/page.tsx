@@ -5,7 +5,7 @@ import { eq, isNull, and } from 'drizzle-orm'
 import { db } from '@/database/client'
 import { posts, categories } from '@/database/schema'
 import { SafeImage } from '@/components/ui/SafeImage'
-import { formatDateTime } from '@/shared/utils'
+import { formatDateTime, resolveImageUrl } from '@/shared/utils'
 
 interface PageProps {
   params: Promise<{ slug: string }>
@@ -22,6 +22,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   if (!post) return {}
 
   const description = post.content.slice(0, 155)
+  const ogImage = resolveImageUrl(post.imageUrl)
 
   return {
     title: post.title,
@@ -30,13 +31,13 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       title: post.title,
       description,
       type: 'article',
-      images: post.imageUrl ? [{ url: post.imageUrl, width: 1200, height: 630 }] : [],
+      images: ogImage ? [{ url: ogImage, width: 1200, height: 630 }] : [],
     },
     twitter: {
       card: 'summary_large_image',
       title: post.title,
       description,
-      images: post.imageUrl ? [post.imageUrl] : [],
+      images: ogImage ? [ogImage] : [],
     },
   }
 }
