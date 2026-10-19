@@ -280,7 +280,7 @@ export function ArtilhariaManager({
 
           <div className="overflow-hidden rounded-2xl border border-slate-100 bg-white shadow-sm">
             {/* Mobile */}
-            <ul className="divide-y divide-slate-50 sm:hidden">
+            <ul className="divide-y divide-slate-50 lg:hidden">
               {filteredArtilheiros.length === 0 && (
                 <li className="px-4 py-8 text-center text-sm text-slate-400">
                   Nenhum jogador encontrado para os filtros aplicados.
@@ -324,7 +324,7 @@ export function ArtilhariaManager({
             </ul>
 
             {/* Desktop */}
-            <div className="hidden overflow-x-auto sm:block">
+            <div className="hidden overflow-x-auto lg:block">
               <table className="w-full text-sm">
                 <thead className="bg-slate-50 text-xs font-semibold tracking-wide text-slate-500 uppercase">
                   <tr>
