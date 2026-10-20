@@ -34,7 +34,6 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 
   const newToken = await signToken({
     userId: user.id,
-    email: user.email,
     role: user.role as UserRole,
   })
 

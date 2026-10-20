@@ -23,14 +23,14 @@ export const authService = {
     }
 
     const [token, refreshToken] = await Promise.all([
-      signToken({ userId: user.id, email: user.email, role: user.role as UserRole }),
+      signToken({ userId: user.id, role: user.role as UserRole }),
       refreshTokenRepository.create(user.id),
     ])
 
     return {
       token,
       refreshToken,
-      user: { id: user.id, name: user.name, email: user.email, role: user.role },
+      user: { id: user.id, name: user.name, role: user.role },
     }
   },
 
@@ -49,14 +49,14 @@ export const authService = {
     })
 
     const [token, refreshToken] = await Promise.all([
-      signToken({ userId: user.id, email: user.email, role: user.role as UserRole }),
+      signToken({ userId: user.id, role: user.role as UserRole }),
       refreshTokenRepository.create(user.id),
     ])
 
     return {
       token,
       refreshToken,
-      user: { id: user.id, name: user.name, email: user.email, role: user.role },
+      user: { id: user.id, name: user.name, role: user.role },
     }
   },
 

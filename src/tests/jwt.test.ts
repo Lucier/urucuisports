@@ -17,7 +17,6 @@ afterEach(() => {
 
 const payload = {
   userId: '123e4567-e89b-12d3-a456-426614174000',
-  email: 'test@example.com',
   role: UserRole.USER,
 }
 
@@ -30,7 +29,6 @@ describe('JWT', () => {
 
     const decoded = await verifyToken(token)
     expect(decoded.userId).toBe(payload.userId)
-    expect(decoded.email).toBe(payload.email)
     expect(decoded.role).toBe(payload.role)
   })
 

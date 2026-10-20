@@ -5,7 +5,6 @@ export enum UserRole {
 
 export interface JWTPayload {
   userId: string
-  email: string
   role: UserRole
 }
 

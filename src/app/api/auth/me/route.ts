@@ -12,7 +12,6 @@ export const GET = withAuth(async (_req: NextRequest, session: JWTPayload) => {
   return NextResponse.json({
     id: user.id,
     name: user.name,
-    email: user.email,
     role: user.role,
     createdAt: user.createdAt,
   })

@@ -34,12 +34,33 @@ export const usersRepository = {
   },
 
   findByEmail: async (email: string) => {
-    const [user] = await db.select().from(users).where(eq(users.email, email))
+    const [user] = await db
+      .select({
+        id: users.id,
+        name: users.name,
+        email: users.email,
+        password: users.password,
+        role: users.role,
+        createdAt: users.createdAt,
+        updatedAt: users.updatedAt,
+      })
+      .from(users)
+      .where(eq(users.email, email))
     return user ?? null
   },
 
   create: async (data: NewUser) => {
-    const [user] = await db.insert(users).values(data).returning()
+    const [user] = await db
+      .insert(users)
+      .values(data)
+      .returning({
+        id: users.id,
+        name: users.name,
+        email: users.email,
+        role: users.role,
+        createdAt: users.createdAt,
+        updatedAt: users.updatedAt,
+      })
     return user!
   },
 
@@ -48,7 +69,14 @@ export const usersRepository = {
       .update(users)
       .set({ ...data, updatedAt: new Date() })
       .where(eq(users.id, id))
-      .returning()
+      .returning({
+        id: users.id,
+        name: users.name,
+        email: users.email,
+        role: users.role,
+        createdAt: users.createdAt,
+        updatedAt: users.updatedAt,
+      })
     return user ?? null
   },
 
