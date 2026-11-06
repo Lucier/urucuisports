@@ -16,6 +16,7 @@ export const SPORT_TYPES = [
   { value: 'beach_tenis', label: 'Beach tênis' },
   { value: 'capoeira', label: 'Capoeira' },
   { value: 'futsal', label: 'Futsal' },
+  { value: 'academia', label: 'Academia' },
 ] as const
 
 export type SportType = (typeof SPORT_TYPES)[number]['value']
