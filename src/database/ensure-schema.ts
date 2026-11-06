@@ -32,6 +32,29 @@ async function main() {
       gols integer NOT NULL DEFAULT 0
     )
   `
+  // Categorias de esportes. Idempotente: pula se o slug ou o nome já existir.
+  const sportCategories = [
+    { name: 'Futebol', slug: 'futebol' },
+    { name: 'Atletismo', slug: 'atletismo' },
+    { name: 'Vôlei', slug: 'volei' },
+    { name: 'Jiu-Jítsu', slug: 'jiu-jitsu' },
+    { name: 'Ciclismo', slug: 'ciclismo' },
+    { name: 'Beach Tênis', slug: 'beach-tenis' },
+    { name: 'Capoeira', slug: 'capoeira' },
+    { name: 'Futsal', slug: 'futsal' },
+    { name: 'Academia', slug: 'academia' },
+    { name: 'Futvolei', slug: 'futvolei' },
+  ]
+  for (const { name, slug } of sportCategories) {
+    await sql`
+      INSERT INTO categories (name, slug)
+      SELECT ${name}::varchar, ${slug}::varchar
+      WHERE NOT EXISTS (
+        SELECT 1 FROM categories WHERE slug = ${slug}::varchar OR lower(name) = lower(${name}::varchar)
+      )
+    `
+  }
+
   console.log('Schema ensured.')
   await sql.end()
 }
