@@ -36,6 +36,12 @@ const postSchema = z.object({
   authorName: z.string().max(255).optional().or(z.literal('')),
   instagramProfile: z.string().max(255).optional().or(z.literal('')),
   status: z.enum(['rascunho', 'revisada', 'pronto']).default('rascunho'),
+  // Vem de <input type="datetime-local"> (ex: 2026-11-05T14:30), sem fuso.
+  publishedAt: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2})?$/, 'Data da notícia inválida')
+    .optional()
+    .or(z.literal('')),
 })
 
 const matchSchema = z.object({
@@ -44,6 +50,16 @@ const matchSchema = z.object({
   awayScore: z.coerce.number().int().min(0).max(99).nullable(),
   status: z.enum(['SCHEDULED', 'LIVE', 'FINISHED', 'POSTPONED']),
 })
+
+// ─── Date helper ──────────────────────────────────────────────────────────────
+
+// O Brasil não adota mais horário de verão (desde 2019), então America/Sao_Paulo
+// é um offset fixo de -03:00.
+function parseBrasiliaDateTime(value: string): Date | null {
+  const withSeconds = value.length === 16 ? `${value}:00` : value
+  const date = new Date(`${withSeconds}-03:00`)
+  return Number.isNaN(date.getTime()) ? null : date
+}
 
 // ─── Revalidation helper ──────────────────────────────────────────────────────
 
@@ -75,6 +91,7 @@ export async function upsertPostAction(
     authorName: formData.get('authorName') || '',
     instagramProfile: formData.get('instagramProfile') || '',
     status: formData.get('status') || 'rascunho',
+    publishedAt: formData.get('publishedAt') || '',
   }
 
   const parsed = postSchema.safeParse(raw)
@@ -83,7 +100,12 @@ export async function upsertPostAction(
     return { error: msg }
   }
 
-  const { title, slug, content, categoryId, imageUrl, relevancia, authorName, instagramProfile, status } = parsed.data
+  const { title, slug, content, categoryId, imageUrl, relevancia, authorName, instagramProfile, status, publishedAt } = parsed.data
+
+  // Vazio = mantém a data atual (edição) ou usa "agora" (criação).
+  const createdAt = publishedAt ? parseBrasiliaDateTime(publishedAt) : undefined
+  if (publishedAt && !createdAt) return { error: 'Data da notícia inválida' }
+
   const id = formData.get('id') as string | null
   const currentUser = await requireRole(UserRole.ADMIN)
 
@@ -91,7 +113,18 @@ export async function upsertPostAction(
     if (id) {
       await db
         .update(posts)
-        .set({ title, slug, content, categoryId, imageUrl: imageUrl || null, relevancia, authorName: authorName || null, instagramProfile: instagramProfile || null, status })
+        .set({
+          title,
+          slug,
+          content,
+          categoryId,
+          imageUrl: imageUrl || null,
+          relevancia,
+          authorName: authorName || null,
+          instagramProfile: instagramProfile || null,
+          status,
+          ...(createdAt && { createdAt }),
+        })
         .where(and(eq(posts.id, id), isNull(posts.deletedAt)))
     } else {
       await db.insert(posts).values({
@@ -105,6 +138,7 @@ export async function upsertPostAction(
         authorName: authorName || null,
         instagramProfile: instagramProfile || null,
         status,
+        ...(createdAt && { createdAt }),
       })
     }
   } catch (err: unknown) {

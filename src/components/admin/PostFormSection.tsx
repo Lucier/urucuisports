@@ -3,6 +3,7 @@
 import { useActionState, useEffect, useState } from 'react'
 import { useFormStatus } from 'react-dom'
 import { upsertPostAction, deletePostAction, type PostFormState } from '@/app/admin/actions'
+import { formatDate } from '@/shared/utils'
 
 type Category = { id: string; name: string }
 
@@ -64,6 +65,22 @@ function slugify(text: string) {
     .replace(/[^a-z0-9\s-]/g, '')
     .trim()
     .replace(/\s+/g, '-')
+}
+
+// Formata uma data para o valor de <input type="datetime-local"> no horário de
+// Brasília, independente do fuso do navegador (o servidor interpreta como -03:00).
+function toDateTimeLocalValue(date: Date | string) {
+  const parts = new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'America/Sao_Paulo',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    hourCycle: 'h23',
+  }).formatToParts(new Date(date))
+  const get = (type: string) => parts.find((p) => p.type === type)?.value ?? ''
+  return `${get('year')}-${get('month')}-${get('day')}T${get('hour')}:${get('minute')}`
 }
 
 export function PostFormSection({ categories, initialPosts, adminId }: Props) {
@@ -143,7 +160,7 @@ export function PostFormSection({ categories, initialPosts, adminId }: Props) {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             <div>
               <label className="mb-1 block text-sm font-medium text-slate-700">Autor</label>
               <input
@@ -172,6 +189,21 @@ export function PostFormSection({ categories, initialPosts, adminId }: Props) {
                   placeholder="perfil_instagram"
                 />
               </div>
+            </div>
+            <div>
+              <label className="mb-1 block text-sm font-medium text-slate-700">
+                Data da notícia
+              </label>
+              <input
+                name="publishedAt"
+                type="datetime-local"
+                defaultValue={editingPost ? toDateTimeLocalValue(editingPost.createdAt) : ''}
+                key={(editingPost?.id ?? 'new') + '-date'}
+                className={inputCls}
+              />
+              <p className="mt-1 text-xs text-slate-400">
+                Horário de Brasília. Em branco, usa a data/hora atual.
+              </p>
             </div>
           </div>
 
@@ -296,7 +328,7 @@ export function PostFormSection({ categories, initialPosts, adminId }: Props) {
                   </span>
                 </div>
                 <p className="mt-0.5 text-xs text-slate-400">
-                  {post.categoryName ?? '—'} · {new Date(post.createdAt).toLocaleDateString('pt-BR')} · Relevância:{' '}
+                  {post.categoryName ?? '—'} · {formatDate(post.createdAt)} · Relevância:{' '}
                   {post.relevancia === 0 ? 'Fora do carrocel' : post.relevancia}
                 </p>
                 <div className="mt-2 flex gap-2">
@@ -357,7 +389,7 @@ export function PostFormSection({ categories, initialPosts, adminId }: Props) {
                       )}
                     </td>
                     <td className="px-4 py-3 text-slate-400">
-                      {new Date(post.createdAt).toLocaleDateString('pt-BR')}
+                      {formatDate(post.createdAt)}
                     </td>
                     <td className="px-4 py-3">
                       <div className="flex justify-end gap-2">
