@@ -5,7 +5,7 @@ import { useFormStatus } from 'react-dom'
 import Image from 'next/image'
 import { upsertAlbumAction, deleteAlbumAction, type AlbumFormState } from '@/app/admin/fotos/actions'
 import { SPORT_TYPES, type SportType } from '@/shared/constants'
-import { formatDate } from '@/shared/utils'
+import { formatDate, toDateTimeLocalValue } from '@/shared/utils'
 
 type Album = {
   id: string
@@ -127,6 +127,23 @@ export function PhotoAlbumManager({ albums, totalCount }: { albums: Album[]; tot
                 <option key={s.value} value={s.value}>{s.label}</option>
               ))}
             </select>
+          </div>
+
+          <div>
+            <label className="mb-1 block text-sm font-medium text-slate-700">
+              Data do álbum
+              <span className="ml-1 text-xs font-normal text-gray-400">(opcional)</span>
+            </label>
+            <input
+              name="publishedAt"
+              type="datetime-local"
+              defaultValue={editing ? toDateTimeLocalValue(editing.createdAt) : ''}
+              key={editing ? `edit-date-${editing.id}` : `new-date-${formKey}`}
+              className={inputCls}
+            />
+            <p className="mt-1 text-xs text-slate-400">
+              Horário de Brasília. Em branco, usa a data/hora atual.
+            </p>
           </div>
 
           <div>

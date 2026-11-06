@@ -26,6 +26,36 @@ export function formatDateTime(date: Date | string): string {
 }
 
 /**
+ * Interpreta o valor de um <input type="datetime-local"> (ex: "2026-11-05T14:30",
+ * sem fuso) como horário de Brasília. O Brasil não adota mais horário de verão
+ * (desde 2019), então America/Sao_Paulo é um offset fixo de -03:00.
+ * Retorna null se o valor for inválido.
+ */
+export function parseBrasiliaDateTime(value: string): Date | null {
+  const withSeconds = value.length === 16 ? `${value}:00` : value
+  const date = new Date(`${withSeconds}-03:00`)
+  return Number.isNaN(date.getTime()) ? null : date
+}
+
+/**
+ * Formata uma data para o valor de um <input type="datetime-local"> no horário
+ * de Brasília, independente do fuso do navegador. Inverso de parseBrasiliaDateTime.
+ */
+export function toDateTimeLocalValue(date: Date | string): string {
+  const parts = new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'America/Sao_Paulo',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    hourCycle: 'h23',
+  }).formatToParts(new Date(date))
+  const get = (type: string) => parts.find((p) => p.type === type)?.value ?? ''
+  return `${get('year')}-${get('month')}-${get('day')}T${get('hour')}:${get('minute')}`
+}
+
+/**
  * Converte qualquer link de compartilhamento do Google Drive para URL direta
  * com resolução original (=s0). Sem isso, o Drive serve um thumbnail comprimido.
  *

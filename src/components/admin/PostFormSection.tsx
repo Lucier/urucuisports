@@ -3,7 +3,7 @@
 import { useActionState, useEffect, useState } from 'react'
 import { useFormStatus } from 'react-dom'
 import { upsertPostAction, deletePostAction, type PostFormState } from '@/app/admin/actions'
-import { formatDate } from '@/shared/utils'
+import { formatDate, toDateTimeLocalValue } from '@/shared/utils'
 
 type Category = { id: string; name: string }
 
@@ -65,22 +65,6 @@ function slugify(text: string) {
     .replace(/[^a-z0-9\s-]/g, '')
     .trim()
     .replace(/\s+/g, '-')
-}
-
-// Formata uma data para o valor de <input type="datetime-local"> no horário de
-// Brasília, independente do fuso do navegador (o servidor interpreta como -03:00).
-function toDateTimeLocalValue(date: Date | string) {
-  const parts = new Intl.DateTimeFormat('en-CA', {
-    timeZone: 'America/Sao_Paulo',
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-    hourCycle: 'h23',
-  }).formatToParts(new Date(date))
-  const get = (type: string) => parts.find((p) => p.type === type)?.value ?? ''
-  return `${get('year')}-${get('month')}-${get('day')}T${get('hour')}:${get('minute')}`
 }
 
 export function PostFormSection({ categories, initialPosts, adminId }: Props) {

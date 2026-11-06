@@ -7,6 +7,7 @@ import { db } from '@/database/client'
 import { posts, matches } from '@/database/schema'
 import { requireRole } from '@/lib/auth'
 import { UserRole } from '@/shared/types/auth'
+import { parseBrasiliaDateTime } from '@/shared/utils'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -50,16 +51,6 @@ const matchSchema = z.object({
   awayScore: z.coerce.number().int().min(0).max(99).nullable(),
   status: z.enum(['SCHEDULED', 'LIVE', 'FINISHED', 'POSTPONED']),
 })
-
-// ─── Date helper ──────────────────────────────────────────────────────────────
-
-// O Brasil não adota mais horário de verão (desde 2019), então America/Sao_Paulo
-// é um offset fixo de -03:00.
-function parseBrasiliaDateTime(value: string): Date | null {
-  const withSeconds = value.length === 16 ? `${value}:00` : value
-  const date = new Date(`${withSeconds}-03:00`)
-  return Number.isNaN(date.getTime()) ? null : date
-}
 
 // ─── Revalidation helper ──────────────────────────────────────────────────────
 
