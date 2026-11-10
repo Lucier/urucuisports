@@ -392,7 +392,8 @@ async function seed() {
   console.log('  ✓ 10 transmissões')
 
   // ── Notícias – 15 artigos ────────────────────────────────────────────────────
-  await db.insert(posts).values([
+  // status 'pronto': a home e /noticias só exibem notícias publicadas
+  const newsSeed = [
     {
       title: 'Uruçíense Série A 2025 começa com goleadas e empates históricos',
       slug: 'urucuiense-serie-a-2025-começa',
@@ -483,7 +484,8 @@ async function seed() {
       content: `Além do futebol, outras modalidades esportivas ganham força em Urucuí. O futsal, o vôlei e a natação têm atraído novos praticantes especialmente entre os jovens. A Secretaria Municipal de Esportes está desenvolvendo projetos para ampliar o acesso às quadras e piscinas da cidade durante 2025.`,
       categoryId: catEsportes.id, authorId: admin.id, relevancia: 1,
     },
-  ])
+  ]
+  await db.insert(posts).values(newsSeed.map((p) => ({ ...p, status: 'pronto' as const })))
   console.log('  ✓ 15 notícias')
 
   console.log('\n✅ Banco de dados populado com sucesso!')
