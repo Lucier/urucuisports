@@ -33,7 +33,7 @@ export async function NewsHighlights() {
       .orderBy(asc(posts.relevancia), desc(posts.createdAt))
       .limit(5),
 
-    // Sidebar: categoria "Futebol Local", mais recentes
+    // Sidebar: as 4 notícias mais recentes, de qualquer categoria
     db
       .select({
         id: posts.id,
@@ -43,8 +43,7 @@ export async function NewsHighlights() {
         createdAt: posts.createdAt,
       })
       .from(posts)
-      .innerJoin(categories, eq(posts.categoryId, categories.id))
-      .where(and(eq(categories.slug, 'futebol-local'), isNull(posts.deletedAt), PUBLISHED))
+      .where(and(isNull(posts.deletedAt), PUBLISHED))
       .orderBy(desc(posts.createdAt))
       .limit(4),
 
@@ -83,14 +82,14 @@ export async function NewsHighlights() {
               </div>
             )}
 
-            {/* Sidebar Futebol Local — ocupa 1/3 */}
+            {/* Sidebar Últimas Notícias — ocupa 1/3 */}
             <div className="flex flex-col">
               <div className="mb-3 flex items-center justify-between">
                 <h3 className="text-sm font-bold uppercase tracking-wide text-slate-700">
-                  Futebol Local
+                  Últimas Notícias
                 </h3>
                 <Link
-                  href="/noticias?categoria=futebol-local"
+                  href="/noticias"
                   className="text-xs font-medium text-emerald-600 hover:underline"
                 >
                   Ver mais →
