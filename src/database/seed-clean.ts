@@ -13,6 +13,7 @@ import {
   photoAlbums,
   streams,
   advertisers,
+  events,
   refreshTokens,
 } from './schema'
 
@@ -32,6 +33,7 @@ async function clean() {
   await db.delete(photoAlbums)
   await db.delete(streams)
   await db.delete(advertisers)
+  await db.delete(events)
   await db.delete(refreshTokens)
 
   console.log('✅ Banco limpo. Tabela users preservada.')
