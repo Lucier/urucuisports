@@ -8,7 +8,6 @@ import { NewsCarousel } from './NewsCarousel'
 import { SerieAStatsCard } from './SerieAStatsCard'
 import { EventsSection } from './EventsSection'
 import { SafeImage } from '@/components/ui/SafeImage'
-import { ArtilhariaWidget } from './ArtilhariaWidget'
 import { formatDate } from '@/shared/utils'
 
 const AD_SLOTS = 3
@@ -205,25 +204,10 @@ export async function NewsHighlights() {
         </>
       )}
 
-      {/* Eventos, Artilharia e Classificação — sempre visíveis */}
+      {/* Eventos e Classificação — sempre visíveis */}
       <div className={hasNews ? 'mt-6 grid grid-cols-1 gap-6 lg:grid-cols-2' : 'grid grid-cols-1 gap-6 lg:grid-cols-2'}>
-        {/* Eventos + Artilharia */}
-        <div className="flex flex-col gap-6">
-          <EventsSection />
-
-          <div>
-            <div className="mb-3 flex items-center justify-between">
-              <h3 className="text-sm font-bold uppercase tracking-wide text-slate-700">Artilharia</h3>
-              <Link
-                href="/estatisticas/campeonato-urucuiense-serie-a?aba=artilharia"
-                className="text-xs font-medium text-emerald-600 hover:underline"
-              >
-                Ver mais →
-              </Link>
-            </div>
-            <ArtilhariaWidget />
-          </div>
-        </div>
+        {/* Eventos */}
+        <EventsSection />
 
         {/* Classificação */}
         <div>
