@@ -26,6 +26,20 @@ export function formatDateTime(date: Date | string): string {
 }
 
 /**
+ * Início do dia de hoje (00:00) no horário de Brasília, como Date. Útil para listar
+ * "de hoje em diante" sem esconder o que acontece ainda hoje.
+ */
+export function startOfTodayBrasilia(now: Date = new Date()): Date {
+  const day = new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'America/Sao_Paulo',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).format(now)
+  return new Date(`${day}T00:00:00-03:00`)
+}
+
+/**
  * Interpreta o valor de um <input type="datetime-local"> (ex: "2026-11-05T14:30",
  * sem fuso) como horário de Brasília. O Brasil não adota mais horário de verão
  * (desde 2019), então America/Sao_Paulo é um offset fixo de -03:00.

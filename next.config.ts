@@ -32,6 +32,10 @@ const nextConfig: NextConfig = {
   output: 'standalone',
   compress: true,
   poweredByHeader: false,
+  experimental: {
+    // Upload do card do evento (até 2 MB) vai no corpo da server action; o padrão é 1 MB.
+    serverActions: { bodySizeLimit: '3mb' },
+  },
   images: {
     remotePatterns: [
       { protocol: 'https', hostname: '**' },

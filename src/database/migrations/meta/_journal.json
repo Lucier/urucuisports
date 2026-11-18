@@ -106,6 +106,13 @@
       "when": 1760198400000,
       "tag": "0015_post_status",
       "breakpoints": true
+    },
+    {
+      "idx": 16,
+      "version": "7",
+      "when": 1763424000000,
+      "tag": "0016_events",
+      "breakpoints": true
     }
   ]
 }

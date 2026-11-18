@@ -7,6 +7,7 @@ import {
   pgEnum,
   index,
   integer,
+  customType,
 } from 'drizzle-orm/pg-core'
 import { relations } from 'drizzle-orm'
 import { type SportType } from '@/shared/constants'
@@ -351,6 +352,35 @@ export const advertisers = pgTable(
     createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
   },
   (table) => [index('idx_advertisers_created').on(table.createdAt)],
+)
+
+// ─── Events ──────────────────────────────────────────────────────────────────
+
+/** Coluna bytea (o pg-core não tem tipo nativo). Lê e grava como Buffer. */
+const bytea = customType<{ data: Buffer; driverData: Buffer }>({
+  dataType() {
+    return 'bytea'
+  },
+})
+
+export const events = pgTable(
+  'events',
+  {
+    id: uuid('id').defaultRandom().primaryKey(),
+    name: varchar('name', { length: 255 }).notNull(),
+    startsAt: timestamp('starts_at', { withTimezone: true }).notNull(),
+    /** Só dígitos, com DDI (ex.: 5589999999999). */
+    whatsapp: varchar('whatsapp', { length: 20 }),
+    siteUrl: text('site_url'),
+    /** Só o handle, sem @ (ex.: urucuisports). */
+    instagram: varchar('instagram', { length: 255 }),
+    /** Card do evento (jpg/jpeg/png), servido por /api/eventos/[id]/card. */
+    cardImage: bytea('card_image').notNull(),
+    cardMimeType: varchar('card_mime_type', { length: 20 }).notNull(),
+    createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow().notNull(),
+  },
+  (table) => [index('idx_events_starts_at').on(table.startsAt)],
 )
 
 // ─── Rate Limits ──────────────────────────────────────────────────────────────

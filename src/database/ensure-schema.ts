@@ -32,6 +32,22 @@ async function main() {
       gols integer NOT NULL DEFAULT 0
     )
   `
+  await sql`
+    CREATE TABLE IF NOT EXISTS events (
+      id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+      name varchar(255) NOT NULL,
+      starts_at timestamptz NOT NULL,
+      whatsapp varchar(20),
+      site_url text,
+      instagram varchar(255),
+      card_image bytea NOT NULL,
+      card_mime_type varchar(20) NOT NULL,
+      created_at timestamptz NOT NULL DEFAULT now(),
+      updated_at timestamptz NOT NULL DEFAULT now()
+    )
+  `
+  await sql`CREATE INDEX IF NOT EXISTS idx_events_starts_at ON events (starts_at)`
+  await sql`ALTER TABLE events ENABLE ROW LEVEL SECURITY`
   // Categorias de esportes. Idempotente: pula se o slug ou o nome já existir.
   const sportCategories = [
     { name: 'Futebol', slug: 'futebol' },
